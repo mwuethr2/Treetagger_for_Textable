@@ -9,7 +9,7 @@ Specification: Widget Textable TreeTagger
 
 1.1 But du projet
 =================
-Créer un Widget Textable Treeanalysis qui utilise TreeTagger_ pour annoter un texte segmenté.
+Créer un Widget Textable Treetagger qui utilise TreeTagger_ pour annoter un texte segmenté.
 
 .. [#] Dernière version en python 2 disponible
 .. _TreeTagger: http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/
@@ -25,30 +25,31 @@ Créer un Widget Textable Treeanalysis qui utilise TreeTagger_ pour annoter un t
 ==============================
 
 
-*Xavier Barros: xavier.barros@unil.ch
-        *code
-        *test
-        *github dealer
+* Xavier Barros: xavier.barros@unil.ch
+        * code
+        * test
+       
 
-*Fiona Testuz: fiona.testuz@unil.ch
-        *code
-        *documentation
-        *specification
-        *interface
+* Fiona Testuz: fiona.testuz@unil.ch
+        * code
+        * documentation
+        * specification
+        * interface
         
-*Michael Wuethrich: michael.t.wuethrich@live.fr
-        *test
-        *code
-        *specification
+* Michael Wuethrich: michael.t.wuethrich@live.fr
+        * test
+        * code
+        * specification
+        * github host
         
-*Chloe Beutler: chloe.beutler@unil.ch
+* Chloe Beutler: chloe.beutler@unil.ch
         * code
         * documentation
         * specification
         
-*Gaetan Schneider: gaetan.schneider@unil.ch
-        *code
-        *documentation
+* Gaetan Schneider: gaetan.schneider@unil.ch
+        * code
+        * documentation
 
 
 
@@ -69,19 +70,18 @@ Python Subprocess https://docs.python.org/2/library/subprocess.html
 
 2.2 Fonctionnalités minimales
 =============================
-* input: segments (textes,phrases ou mots)
-Possibilité d'extraire l'annotation du segments (par exemple annotation titre) afin de pouvoir par la suite situer le segement dans le texte
+* input: segments textes
+Possibilité d'extraire l'annotation du segments (par exemple annotation titre) afin de pouvoir par la suite situer le segment dans le texte
 
 * Entrée dans le widgets:
 Interface demandant à l'utilisateur où est placé treetagger dans son ordinateur (chemin d'accès)
 ainsi que les options d'analyse choisies (2 langues à choix, output for each token, input option...??)
 
 * Opérations du widget:
-1. Test l'Input, si conditions du nombre de caractères minimums (A Definir) pas remplies message d'erreur
-2. Envoi l'information au logiciel treetagger
-3. Récupère l'information en segmentation
+1. Envoi l'information au logiciel treetagger
+2. Récupère l'information en segmentation
 
-* output: segments en mots annotées (annotation: TAG, annotation: segment d'origine)
+* output: segments en mots annotées (annotation: TAG, annotation: segment d'entrée)
   
    
    | segment 1 PHRASE | 
@@ -99,11 +99,13 @@ ainsi que les options d'analyse choisies (2 langues à choix, output for each to
 * Utilisation de lemmes
 * Output autant de segmentations que de tokens
 * Options de 2 langues à choix, output for each token, input option,.. TODO
+* Choix de langue, français par défaut (anglais en plus si tout fonctionne)
+* Si un widget treetagger est déjà utilisé dans le travail en cours, ne pas redemander le lien pour treetagger et réutiliser celui entré précédemment.
 
 2.4 Fonctionnalités optionelles
 ===============================
-* Choix de langue 
-* Si un widget treetagger est déjà utilisé dans le travail en cours, ne pas redemander le lien pour treetagger et réutiliser celui entré précédemment.
+* ajouter d'autres options treetagger
+
 
 
 2.5 Tests
