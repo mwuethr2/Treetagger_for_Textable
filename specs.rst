@@ -33,23 +33,29 @@ Créer un Widget Textable Treetagger qui utilise TreeTagger_ pour annoter un tex
 * Fiona Testuz: fiona.testuz@unil.ch
         * code
         * documentation
-        * specification
+        * spécification
         * interface
         
 * Michael Wuethrich: michael.t.wuethrich@live.fr
         * test
         * code
-        * specification
+        * spécification
         * github host
         
 * Chloe Beutler: chloe.beutler@unil.ch
         * code
         * documentation
-        * specification
+        * spécification
         
-* Gaetan Schneider: gaetan.schneider@unil.ch
+* Gaétan Schneider: gaetan.schneider@unil.ch
         * code
         * documentation
+        * spécification
+        
+* Jocelin Pitteloud: jocelin.pitteloud@unil.ch
+        * code
+        * test
+        * documentation 
 
 
 
