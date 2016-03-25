@@ -40,7 +40,7 @@ Créer un Widget Textable Treetagger qui utilise TreeTagger_ pour annoter un tex
         * test
         * code
         * spécification
-        * github host
+        * github Boss
         
 * Chloe Beutler: chloe.beutler@unil.ch
         * code
