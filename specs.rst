@@ -73,7 +73,7 @@ Python Subprocess https://docs.python.org/2/library/subprocess.html
 
 .. image:: img/Path_treetagger.png
 .. image:: img/Treetagger.png
-.. image:: img/Treetagger_option.png
+.. image:: img/Treetagger_options.png
 
 2.2 Fonctionnalités minimales
 =============================
