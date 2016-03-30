@@ -11,6 +11,7 @@ from OWWidget import *
 import OWGUI
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
+import os
 
 class OWTreetagger(OWWidget):
     """Orange widget for adding an integer value to the input"""
@@ -19,6 +20,7 @@ class OWTreetagger(OWWidget):
     settingsList = [
         'TextInput',
         'TreetaggerLink',
+        'lien_ttgg',
     ]   
     
     def __init__(self, parent=None, signalManager=None):
@@ -36,6 +38,7 @@ class OWTreetagger(OWWidget):
         self.TextInput = ""  
         self.TreetaggerLink = Segmenter()
         self.loadSettings()
+        self.lien_ttgg = ""
         
         self.inputData = None   # NB: not a setting.
         
@@ -47,10 +50,9 @@ class OWTreetagger(OWWidget):
         OWGUI.lineEdit(
             widget = self.infoBox1,
             master = self,
-            value = '',
+            value = 'lien_ttgg',
             label = 'copier le lien ici: ',
-            tooltip='on rentre le chemin pour retrouver Treetagger.',
-            #callback=self.verifier_treetagger()
+            tooltip="Entrer le chemin pour retrouver Treetagger.\nDoit contenir 5 fichier:\n'bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib' et 'README.txt' ",
         )
         OWGUI.button(
             widget=self.infoBox1, 
@@ -58,8 +60,13 @@ class OWTreetagger(OWWidget):
             label='Enregistrer', 
             addToLayout=False, 
             default=True,
-            #callback = self.valider(),
+            callback = self.verifier_treetagger,
         )
+        self.infoLine1 = OWGUI.widgetLabel( # NB: using self here enables us to
+                                           # access the label in other methods.
+            widget=self.infoBox1,              
+            label='No input.',
+            )
         #----------------------------------------------------------------------
 
         # infoBox2 noter le nom de l'etiquette
@@ -72,6 +79,7 @@ class OWTreetagger(OWWidget):
             tooltip="on donne l'identifiant qu'auront chaque segment",
             #callback=self.
         )
+        self.infoBox2.setDisabled(True)
         #-----------------------------------------------------------------------
 
         # infoBox3 donne des info sur input et output
@@ -83,17 +91,47 @@ class OWTreetagger(OWWidget):
             label='No input.',
         )
         #------------------------------------------------------------------------
-        
-    def verifier_treetagger():
-        #qqn doit faire 
-        #voir dans si le dossier contient un dossier bin ou lin si oui ok sinon pas ok
-        pass
-        
-    def valider():
-        #bla
-        pass
+         
+   
     #----------------------------------------------------------------------------
-    # def ok :
+    # definitions       
+    def verifier_treetagger(self):
+        #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
+        self.infoBox2.setDisabled(True)
+
+        # si le lien n'est pas trouvee
+        self.infoLine1.setText(
+                "Le lien n'est pas trouve"
+            )
+
+        # va dans l'adresse rentre par l'utilisateur
+        os.chdir(self.lien_ttgg)
+
+        # la liste dans son dossier
+        ttgg_list_verification = os.listdir('.')
+
+        # la liste qu'il devrait avoir
+        ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
+
+        # je verifier qu'elle soit identique sauf le dernier
+        compteur = 0
+        for i in range (len(ttgg_list_folder)):
+            if ttgg_list_folder[i] in ttgg_list_verification:
+                compteur+=1
+        if compteur == len(ttgg_list_folder):
+            self.infoBox2.setDisabled(False)
+            #remettre compteur a 0 si modifie le lien !
+            compteur = 0
+            #donne info sur le lien
+            self.infoLine1.setText(
+                "Merci, les options sont deverouillees"
+            )
+        else:
+            #donne info sur le lien
+            self.infoLine1.setText(
+                "Le lien n'est pas correcte"
+            )
+
     
     #recoit l'input
     def processInputData(self, inputData):
