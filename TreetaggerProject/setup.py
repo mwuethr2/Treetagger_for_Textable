@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='MyWidgets',
+    name='TreetaggerWidget',
     version='0.0.1',
     packages=['TreetaggerWidget'],
     entry_points={'orange.widgets': 'MyWidgets = TreetaggerWidget'},
