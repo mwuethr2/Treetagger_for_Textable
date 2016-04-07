@@ -11,7 +11,7 @@ setup(
     ],
     author='University of Lausanne',
     license='GNU General Public License v3 (GPLv3)',
-    keywords=[ #a choisir
+    keywords=[
         'tree-tagger',
         'POS tagging',
     ],
