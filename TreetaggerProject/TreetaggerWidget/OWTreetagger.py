@@ -171,12 +171,13 @@ class OWTreetagger(OWWidget):
             
             #recreer une segmentation -> qui sera l'output
             self.all_ttgg_out.append(self.ttgg_out)
-       
-        all_ttgg_tag = self.all_ttgg_out
-                
             
+            
+        #faire pour tout les input    -->   mot_ttgg = "\n".join(l[0] for l in ttgg_out)
+            
+           
         
-        return all_ttgg_tag
+        return self.all_ttgg_out
         
         
     def sendData(self):
