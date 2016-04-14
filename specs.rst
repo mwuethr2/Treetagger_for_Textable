@@ -70,15 +70,15 @@ Python Subprocess https://docs.python.org/2/library/subprocess.html
 
 2.1 Mock-up de l'interface
 ==========================
-* avace
+* Path
 
   .. image:: img/Path_Treetagger.png
 
-*  noral
+*  Treetagger
 
   .. image:: img/Treetagger.png
   
-* dfb
+* Treetagger options
 
   .. image:: img/Treetagger_options.png
 
