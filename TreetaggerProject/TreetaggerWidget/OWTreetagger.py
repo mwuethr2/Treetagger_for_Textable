@@ -11,6 +11,7 @@ from OWWidget import *
 import OWGUI
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
+import PIPEcommunic
 import os
 
 class OWTreetagger(OWWidget):
@@ -18,7 +19,7 @@ class OWTreetagger(OWWidget):
     
     # Widget settings declaration...
     settingsList = [
-        'TextInput',
+        'InputSegmentation',
         'TreetaggerLink',
         'lien_ttgg',
     ]   
@@ -30,13 +31,12 @@ class OWTreetagger(OWWidget):
 
         #----------------------------------------------------------------------
         # Channel definitions...
-        self.inputs = [('TextInput', Segmentation, self.processInputData)]     
-        self.outputs = [('Intenger', str)]
+        self.inputs = [('InputSegmentation', Segmentation, self.processInputData)]     
+        self.outputs = [('OutputSegmentation', Segmentation,)]
 
         #----------------------------------------------------------------------
         # Settings and other attribute initializations...
-        self.TextInput = ""  
-        self.TreetaggerLink = Segmenter()
+        self.InputSegmentation = []  
         self.loadSettings()
         self.lien_ttgg = ""
         
@@ -160,7 +160,24 @@ class OWTreetagger(OWWidget):
         pass
     
     def tagInput(self):
-        self.TreetaggerLink.concatenate()
+        treetagger = new PIPEcommunic.TreeTagger(path_to_home=self.lien_ttgg, language='french', 
+                 encoding='utf-8', verbose=False, abbreviation_list=None)
+        
+        mot_ttgg_out = []
+        
+        for i in xrange(len(self.InputSegmentation.segments)):
+            self.ttgg_out = treetagger.tag(self.InputSegmentation.segments[i]) #inputData <- liste de phrases
+            original_seg = i
+            
+            #recreer une segmentation -> qui sera l'output
+            self.all_ttgg_out.append(self.ttgg_out)
+       
+        all_ttgg_tag = self.all_ttgg_out
+                
+            
+        
+        return all_ttgg_tag
+        
         
     def sendData(self):
         #Compute result of widget processing and send to output
