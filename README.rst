@@ -1,2 +1,4 @@
-# Treetagger-Widget
-print "hello !"
+####################################
+Treetagger Widget
+####################################
+
