@@ -95,6 +95,8 @@ class OWTreetagger(OWWidget):
    
     #----------------------------------------------------------------------------
     # definitions       
+    
+    
     def verifier_treetagger(self):
         #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
         self.infoBox2.setDisabled(True)
@@ -140,18 +142,25 @@ class OWTreetagger(OWWidget):
         # from other methods).
      
         self.inputData = inputData  
-        
-        """
-        # pour desactiver la box si pas de input !
-        if inputData is None:
-            self.optionsBox.setDisabled(True)
+        if self.checkInput():
+            self.tagInput()
+            """
+            # pour desactiver la box si pas de input !
+            if inputData is None:
+                self.optionsBox.setDisabled(True)
+            else:
+                self.optionsBox.setDisabled(False)
+            """
+            # Send data to output.
+            self.sendData()
         else:
-            self.optionsBox.setDisabled(False)
-        """
-        
-        # Send data to output.
-        self.sendData()
-        
+            #si input pas bon
+            pass
+    def checkInput(self):
+        pass
+    
+    def tagInput(self):
+        self.TreetaggerLink.concatenate()
         
     def sendData(self):
         #Compute result of widget processing and send to output
