@@ -106,21 +106,21 @@ class OWTreetagger(OWWidget):
                 "Le lien n'est pas trouve"
             )
 
-        # va dans l'adresse rentre par l'utilisateur
-        os.chdir(self.lien_ttgg)
-
         # la liste dans son dossier
         ttgg_list_verification = os.listdir('.')
 
         # la liste qu'il devrait avoir
-        ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
+        ttgg_list_folder = ['bin/tag-french.bat', 'lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+
+        check = True
+        for file_utile in ttgg_list_folder:
+            check = check and os.path.isfile( replace(self.lien_ttgg + "/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger à l'input (doit pas finir avec /))
+            if not check:
+                break
 
         # je verifier qu'elle soit identique sauf le dernier
-        compteur = 0
-        for i in range (len(ttgg_list_folder)):
-            if ttgg_list_folder[i] in ttgg_list_verification:
-                compteur+=1
-        if compteur == len(ttgg_list_folder):
+
+        if check:
             self.infoBox2.setDisabled(False)
             #remettre compteur a 0 si modifie le lien !
             compteur = 0
