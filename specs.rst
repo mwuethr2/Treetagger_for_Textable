@@ -162,4 +162,4 @@ TODO
 
 4. Infrastructure
 =================
-Le projet est disponible sur GitHub à l'adresse https://github.com/fio818/Treetagger-Widget 
+Le projet est disponible sur GitHub à l'adresse https://github.com/mwuethr2/Treetagger_for_Textable
