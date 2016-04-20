@@ -3,7 +3,6 @@ Specification: Widget Textable TreeTagger
 #########################################
 
 
-
 1 Introduction
 **************
 
