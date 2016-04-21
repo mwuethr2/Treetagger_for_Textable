@@ -5,6 +5,7 @@ import subprocess as sp
 def tag(texte, language='french',   )
 
     #texte= avec  après chanque mot et ponctuation \n
+    texte= "\n".join(texte)
 
     tmp = 'tmp_file.txt'
     f = open(tmp, 'w')
