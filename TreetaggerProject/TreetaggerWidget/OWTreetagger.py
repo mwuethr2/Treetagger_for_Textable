@@ -11,130 +11,139 @@ from OWWidget import *
 import OWGUI
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
-import PIPEcommunic
-import os
+import ctypes
+#import os
 
 class OWTreetagger(OWWidget):
-    """Orange widget for adding an integer value to the input"""
     
     # Widget settings declaration...
     settingsList = [
-        'InputSegmentation',
+        'TextInput',
         'TreetaggerLink',
         'lien_ttgg',
-    ]   
+        'options_ttgg'
+        'langue'
+        'word_label'
+        ]   
     
     def __init__(self, parent=None, signalManager=None):
-        """Widget creator."""
-        
+    
+        #Widget creator
         OWWidget.__init__(self, parent, signalManager, wantMainArea=0)
-
-        #----------------------------------------------------------------------
+        
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
         # Channel definitions...
-        self.inputs = [('InputSegmentation', Segmentation, self.processInputData)]     
-        self.outputs = [('OutputSegmentation', Segmentation,)]
+        self.inputs = [('TextInput', Segmentation, self.processInputData)]     
+        self.outputs = [('Intenger', str)]
 
-        #----------------------------------------------------------------------
         # Settings and other attribute initializations...
-        self.InputSegmentation = []  
+        self.TextInput = ""  
+        self.TreetaggerLink = Segmenter()
+        
+        self.options_ttgg = False
+        self.langue = "francais"
+        self.word_label = ""
+        
+        self.lien_ttgg = None
         self.loadSettings()
-        self.lien_ttgg = ""
+        self.lien_ttgg = None
+
+        # aller chercher le lien TreeTagger si pas deja la
+        if self.lien_ttgg is None:
+            self.browse()
         
         self.inputData = None   # NB: not a setting.
         
-        #----------------------------------------------------------------------
-        # User interface...
-       
-        # infoBox1 sert pour trouver le lien vers Treetagger mais manque fonction
-        self.infoBox1 = OWGUI.widgetBox(self.controlArea, u"Chemin d'acces vers Treetagger: ", addSpace=True)
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------        
+        # User interface
+        
+        OWGUI.checkBox(
+            widget=self.controlArea,
+            master=self, 
+            value="options_ttgg", 
+            label="Treetagger options"
+            )
+            
+        OWGUI.comboBox(
+            widget=self.controlArea,
+            master=self, 
+            value='langue', 
+            items= ["francais", "anglais"],
+            )
+            
+        # infoBox1
+        self.infoBox1 = OWGUI.widgetBox(self.controlArea, u"Option: ", addSpace=True)
+        
         OWGUI.lineEdit(
             widget = self.infoBox1,
             master = self,
-            value = 'lien_ttgg',
-            label = 'copier le lien ici: ',
-            tooltip="Entrer le chemin pour retrouver Treetagger.\nDoit contenir 5 fichier:\n'bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib' et 'README.txt' ",
+            value = 'word_label',
+            label = 'Output segementation label : ',
+            tooltip = "Entrer le label"
         )
-        OWGUI.button(
-            widget=self.infoBox1, 
-            master=self, 
-            label='Enregistrer', 
-            addToLayout=False, 
-            default=True,
-            callback = self.verifier_treetagger,
-        )
-        self.infoLine1 = OWGUI.widgetLabel( # NB: using self here enables us to
-                                           # access the label in other methods.
-            widget=self.infoBox1,              
-            label='No input.',
-            )
-        #----------------------------------------------------------------------
-
-        # infoBox2 noter le nom de l'etiquette
-        self.infoBox2 = OWGUI.widgetBox(self.controlArea, u"Option: ")
-        OWGUI.lineEdit(
-            widget = self.infoBox2,
-            master = self,
-            value = '',
-            label = 'Output segment label: ',
-            tooltip="on donne l'identifiant qu'auront chaque segment",
-            #callback=self.
-        )
-        self.infoBox2.setDisabled(True)
-        #-----------------------------------------------------------------------
 
         # infoBox3 donne des info sur input et output
-        self.infoBox3 = OWGUI.widgetBox(self.controlArea, u"Option: ")
+        self.infoBox2 = OWGUI.widgetBox(self.controlArea, u"Info : ")
         
-        self.infoLine = OWGUI.widgetLabel( # NB: using self here enables us to
-                                           # access the label in other methods.
-            widget=self.infoBox3,              
+        self.infoLine = OWGUI.widgetLabel( 
+            widget=self.infoBox2,              
             label='No input.',
+        )         
+        
+        self.infoBox3 = OWGUI.widgetBox(self.controlArea, u"")
+        OWGUI.button(
+            widget=self.infoBox3, 
+            master=self, 
+            label='Send', 
+            addToLayout=False, 
+            default=True,
+            #callback = self.verifier_treetagger,
         )
-        #------------------------------------------------------------------------
-         
-   
-    #----------------------------------------------------------------------------
-    # definitions       
+        
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # definitions
     
-    
-    def verifier_treetagger(self):
-        #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
-        self.infoBox2.setDisabled(True)
-
-        # si le lien n'est pas trouvee
-        self.infoLine1.setText(
-                "Le lien n'est pas trouve"
+    def browse(self):
+        self.lien_ttgg = unicode(
+            QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')
             )
-
-        # va dans l'adresse rentre par l'utilisateur
-        os.chdir(self.lien_ttgg)
-
-        # la liste dans son dossier
-        ttgg_list_verification = os.listdir('.')
-
-        # la liste qu'il devrait avoir
-        ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
-
-        # je verifier qu'elle soit identique sauf le dernier
-        compteur = 0
-        for i in range (len(ttgg_list_folder)):
-            if ttgg_list_folder[i] in ttgg_list_verification:
-                compteur+=1
-        if compteur == len(ttgg_list_folder):
-            self.infoBox2.setDisabled(False)
-            #remettre compteur a 0 si modifie le lien !
-            compteur = 0
-            #donne info sur le lien
-            self.infoLine1.setText(
-                "Merci, les options sont deverouillees"
-            )
+       
+        if self.lien_ttgg == "":
+            ctypes.windll.user32.MessageBoxA(0, "Entrez un lien, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
+            self.browse()
+            
         else:
-            #donne info sur le lien
-            self.infoLine1.setText(
-                "Le lien n'est pas correcte"
-            )
+            # va dans l'adresse rentre par l'utilisateur
+            os.chdir(self.lien_ttgg)
 
-    
+            # la liste dans son dossier
+            ttgg_list_verification = os.listdir('.')
+
+            # la liste qu'il devrait avoir
+            ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
+
+            # je verifier qu'elle soit identique sauf le dernier
+            compteur = 0
+            for i in range (len(ttgg_list_folder)):
+            
+                if ttgg_list_folder[i] in ttgg_list_verification:
+                    compteur+=1
+                    
+            if compteur == len(ttgg_list_folder):
+                
+                #remettre compteur a 0 si modifie le lien !
+                compteur = 0
+                
+                # ok le lien est correcte
+                return
+                
+            else:
+                #donne info sur le lien
+                ctypes.windll.user32.MessageBoxA(0, "Votre lien est incorecte, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
+                self.browse()
+            
+            self.saveSettings()
+       
     #recoit l'input
     def processInputData(self, inputData):
         """Method that processes the input data (as specified in __init__)."""
@@ -142,43 +151,9 @@ class OWTreetagger(OWWidget):
         # from other methods).
      
         self.inputData = inputData  
-        if self.checkInput():
-            self.tagInput()
-            """
-            # pour desactiver la box si pas de input !
-            if inputData is None:
-                self.optionsBox.setDisabled(True)
-            else:
-                self.optionsBox.setDisabled(False)
-            """
-            # Send data to output.
-            self.sendData()
-        else:
-            #si input pas bon
-            pass
-    def checkInput(self):
-        pass
-    
-    def tagInput(self):
-        treetagger = new PIPEcommunic.TreeTagger(path_to_home=self.lien_ttgg, language='french', 
-                 encoding='utf-8', verbose=False, abbreviation_list=None)
         
-        mot_ttgg_out = []
-        
-        for i in xrange(len(self.InputSegmentation.segments)):
-            self.ttgg_out = treetagger.tag(self.InputSegmentation.segments[i]) #inputData <- liste de phrases
-            original_seg = i
-            
-            #recreer une segmentation -> qui sera l'output
-            self.all_ttgg_out.append(self.ttgg_out)
-            
-            
-        #faire pour tout les input    -->   mot_ttgg = "\n".join(l[0] for l in ttgg_out)
-            
-           
-        
-        return self.all_ttgg_out
-        
+        # Send data to output.
+        self.sendData()
         
     def sendData(self):
         #Compute result of widget processing and send to output
@@ -194,6 +169,7 @@ class OWTreetagger(OWWidget):
             )
             self.send('Treetagger', result)
             
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__=='__main__':
     myApplication = QApplication(sys.argv)
