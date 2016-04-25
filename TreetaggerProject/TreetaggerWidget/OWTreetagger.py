@@ -12,14 +12,13 @@ import OWGUI
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
 import ctypes
-#import os
+import os
 
 class OWTreetagger(OWWidget):
     
     # Widget settings declaration...
     settingsList = [
         'TextInput',
-        'TreetaggerLink',
         'lien_ttgg',
         'options_ttgg'
         'langue'
@@ -33,12 +32,8 @@ class OWTreetagger(OWWidget):
         
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
         # Channel definitions...
-        self.inputs = [('TextInput', Segmentation, self.processInputData)]     
-        self.outputs = [('Intenger', str)]
-
-        # Settings and other attribute initializations...
-        self.TextInput = ""  
-        self.TreetaggerLink = Segmenter()
+        self.inputs = [('TextInput', Segmentation, self.processInputData), Single]     
+        self.outputs = [('TextInput', Segmentation)]
         
         self.options_ttgg = False
         self.langue = "francais"
@@ -46,14 +41,17 @@ class OWTreetagger(OWWidget):
         
         self.lien_ttgg = None
         self.loadSettings()
-        self.lien_ttgg = None
+        
+        # Settings and other attribute initializations...
+        self.TextInput = "salut"
 
         # aller chercher le lien TreeTagger si pas deja la
         if self.lien_ttgg is None:
             self.browse()
         
         self.inputData = None   # NB: not a setting.
-        
+        self.segmenter = Segmenter()
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------        
         # User interface
         
@@ -77,7 +75,7 @@ class OWTreetagger(OWWidget):
         OWGUI.lineEdit(
             widget = self.infoBox1,
             master = self,
-            value = 'word_label',
+            value = 'word_label', # utiliser self.word_label pour reprendre la valeur entre
             label = 'Output segementation label : ',
             tooltip = "Entrer le label"
         )
@@ -146,28 +144,30 @@ class OWTreetagger(OWWidget):
        
     #recoit l'input
     def processInputData(self, inputData):
-        """Method that processes the input data (as specified in __init__)."""
-        # Store input data in attribute of this widget (so it can be accessed
-        # from other methods).
-     
-        self.inputData = inputData  
+
+        # ici on prend le input 
+        self.inputData = inputData[0].get_content()
         
         # Send data to output.
         self.sendData()
         
     def sendData(self):
-        #Compute result of widget processing and send to output
+
         # Important: if input data is None, propagate this value to output...
-        if self.inputData is None:
+        if not self.inputData:
             self.infoLine.setText('No input.')
-            self.send('TreetaggerLink', None)
-            
+            self.send('TextInput', None)
         else:
-            result = self.inputData 
+        
+            # separe a chaque espace ajouter les caractere "?,.!:; et autres..." 
+            self.inputData_col = self.inputData.replace(" ", "\n") 
+            
+            # code pour montrer ce que ca donne et je rajoute TextInput pour après (mettre label)
+            result = self.inputData_col + self.TextInput 
             self.infoLine.setText(
-                'Il y a %i segment en input ' %len((self.inputData))
+                ' %s = %s' % ( self.TextInput, result)
             )
-            self.send('Treetagger', result)
+            self.send('TextInput', result)
             
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
