@@ -69,9 +69,6 @@ Python Subprocess https://docs.python.org/2/library/subprocess.html
 
 2.1 Mock-up de l'interface
 ==========================
-* Path
-
-  .. image:: img/Path_Treetagger.png
 
 *  Treetagger
 
