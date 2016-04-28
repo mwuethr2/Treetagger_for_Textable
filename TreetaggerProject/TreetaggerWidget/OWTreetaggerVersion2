@@ -1,7 +1,6 @@
 """
 <name>Treetagger</name>
 <description>creation de Treetagger widget</description>
-<icon>path_to_icon.svg</icon>
 <priority>11</priority>
 """
 
@@ -35,7 +34,7 @@ class OWTreetagger(OWWidget):
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
         # Channel definitions...
         self.inputs = [('Text Input', Segmentation, self.processInputData), Single]
-        self.outputs = [(u'Text data', Segmentation)]
+        self.outputs = [('Text data', Segmentation)]
 
         self.options_ttgg = False
         self.langue = "francais"
@@ -131,69 +130,33 @@ class OWTreetagger(OWWidget):
 
     #     return TextInput.get_annotation_keys()
 
+
     def browse(self):
-        self.lien_ttgg = unicode(
-            QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')
-            )
-
-        if self.lien_ttgg == "":
-            ctypes.windll.user32.MessageBoxA(0, "Entrez un lien, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
+        self.lien_ttgg = unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger'))
+        if self.lien_ttgg == "" or not verifier_treetagger():
+            #donne info sur le lien
             self.browse()
+        self.saveSettings()
 
-        else:
-            # va dans l'adresse rentre par l'utilisateur
-            os.chdir(self.lien_ttgg)
-
-            # la liste dans son dossier
-            ttgg_list_verification = os.listdir('.')
-
-            # la liste qu'il devrait avoir
-            ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
-
-            # je verifier qu'elle soit identique sauf le dernier
-            compteur = 0
-            for i in range (len(ttgg_list_folder)):
-
-                if ttgg_list_folder[i] in ttgg_list_verification:
-                    compteur+=1
-
-            if compteur == len(ttgg_list_folder):
-
-                #remettre compteur a 0 si modifie le lien !
-                compteur = 0
-
-                # ok le lien est correcte
-                return
-
-            else:
-                #donne info sur le lien
-                ctypes.windll.user32.MessageBoxA(0, "Votre lien est incorecte, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
-                self.browse()
-
-            self.saveSettings()
-            self.path = ttgg_list_verification
-            return self.path
 
     def verifier_treetagger(self):
         #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
         self.infoBox2.setDisabled(True)
 
         # si le lien n'est pas trouvee
-        self.infoLine1.setText(
-                "Le lien n'est pas trouve"
-            )
-
-        # la liste dans son dossier
-        ttgg_list_verification = os.listdir('.')
+        self.infoLine1.setText("Le lien n'est pas trouve")
 
         # la liste qu'il devrait avoir
-        ttgg_list_folder = ['bin/tag-french.bat', 'lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        ttgg_list_folder = ['lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        #attention aux systemes d'explotataion (les fichiers changet (MAC WINDOWS))! import platform
 
         check = True
         for file_utile in ttgg_list_folder:
             check = check and os.path.isfile( replace(self.lien_ttgg + "/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger a l'input (doit pas finir avec /))
             if not check:
                 break
+        return check
+
 
     #recoit l'input
     def processInputData(self, inputData):
@@ -204,20 +167,20 @@ class OWTreetagger(OWWidget):
         self.sendData()
 
     def sendData(self):
-        self.inputs = list() 
+        self.inputs = list()
         segmenter = Segmenter()
         # Important: if input data is None, propagate this value to output...
         if len(self.inputData) == 0:
             self.infoLine.setText('No input.')
-            self.send('TextInput', None)
+            self.send('Text data', None)
         else:
             self.infoLine.setText(self.inputData.to_string())
             for segment in self.inputData:
-                
+
                 # On appel la fonction tag
                 tagged_text = self.tag(segment.get_content())
                 # On definit des variables temporaies
-                
+
 
                 # On remplis la chaine temporaire (temp_string) des valeurs contenue dans la liste de liste self.inputData_tag
                 for element in range(len(tagged_text)-1): #ENLEVER -1 SI PAS DE LIGNES VIDES DANS tag()
@@ -227,12 +190,12 @@ class OWTreetagger(OWWidget):
                     'lemma': tagged_text[element][2]
                     })
                     self.inputs.append(input)
-                    
-        
-            self.segmentation = segmenter.concatenate(self.inputs)
-            print self.segmentation.to_string()
-            self.infoLine.setText(self.segmentation.to_string())
-            self.send(u'Text data', self.segmentation, self)
+
+
+            seg = segmenter.concatenate(self.inputs)
+            print seg.to_string()
+            self.infoLine.setText(self.seg.to_string())
+            self.send('Text data', self.seg, self)
 
                     #temp_list_elem = append(temp_elem_keys)
                 # Depend de la facon d'affecter un element annotation
