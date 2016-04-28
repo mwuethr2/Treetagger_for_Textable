@@ -186,16 +186,16 @@ class OWTreetagger(OWWidget):
                 for element in range(len(tagged_text)-1): #ENLEVER -1 SI PAS DE LIGNES VIDES DANS tag()
                     input = Input(tagged_text[element][0])
                     input.segments[0].annotations.update({
-                    'tag': tagged_text[element][1],
-                    'lemma': tagged_text[element][2]
+                        'tag': tagged_text[element][1],
+                        'lemma': tagged_text[element][2]
                     })
                     self.inputs.append(input)
 
 
             seg = segmenter.concatenate(self.inputs)
             print seg.to_string()
-            self.infoLine.setText(self.seg.to_string())
-            self.send('Text data', self.seg, self)
+            self.infoLine.setText(seg.to_string())
+            self.send('Text data', seg, self)
 
                     #temp_list_elem = append(temp_elem_keys)
                 # Depend de la facon d'affecter un element annotation
@@ -228,7 +228,7 @@ class OWTreetagger(OWWidget):
         texte="Bonjour\nca\nva\n?"   #.join(inputData.data) # ATTENTION POUR LE MOMENT CA NE METS PAS LA PONCTUATION A LA LIGNE
         tmp = 'tmp_file.txt'
         f = open(tmp, 'w')
-        f.write(texte)
+        f.write(self.inputData)
         f.close()
 
         commande = self.lien_ttgg + "/" + "bin/tag-" + language + ".bat"
@@ -254,5 +254,7 @@ if __name__=='__main__':
     myWidget = OWTreetagger()
     myWidget.show()
     #segmenter = Segmenter()
-    myWidget.processInputData(u"How are you?")
+    input = Input("How are you?")
+    
+    myWidget.processInputData(input)
     myApplication.exec_()
