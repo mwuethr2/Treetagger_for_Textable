@@ -1,35 +1,3 @@
-
-Skip to content
-This repository
-
-    Pull requests
-    Issues
-    Gist
-
-    @mwuethr2
-
-You don’t have any verified emails. We recommend verifying at least one email.
-Email verification helps our support team verify ownership if you lose account access and allows you to receive all the notifications you ask for.
-
-6
-0
-
-    0
-
-mwuethr2/Treetagger_for_Textable
-Code
-Issues 0
-Pull requests 2
-Wiki
-Pulse
-Graphs
-Settings
-Treetagger_for_Textable/Test_Annotation
-8f07e50 11 hours ago
-@JocelinPitteloud JocelinPitteloud Update Test_Annotation
-@mwuethr2
-@JocelinPitteloud
-285 lines (213 sloc) 10.1 KB
 """
 <name>Treetagger</name>
 <description>creation de Treetagger widget</description>
@@ -314,8 +282,3 @@ if __name__=='__main__':
     #segmenter = Segmenter()
     myWidget.processInputData(u"How are you?")
     myApplication.exec_()
-
-    Status API Training Shop Blog About 
-
-    © 2016 GitHub, Inc. Terms Privacy Security Contact Help 
-
