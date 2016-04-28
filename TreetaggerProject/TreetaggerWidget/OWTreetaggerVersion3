@@ -47,7 +47,7 @@ class OWTreetagger(OWWidget):
         if self.lien_ttgg is None:
             self.browse()
 
-       # self.inputData = None   # NB: not a setting.
+        self.inputData = None   # NB: not a setting.
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -98,38 +98,6 @@ class OWTreetagger(OWWidget):
         )
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    # definitions
-
-#Annotations bloc repris du cours progtextI
-
-    # def annotations(self):
-
-    #     sampled_seg,discarded_seg = segmenter.sample(input_seg, 10)
-    #     return sampled_seg.to_string()
-
-
-
-    #     filtered_seg, _ = segmenter.select(
-    #         input_seg,
-    #         re.compile(r'voyelle'),
-    #         annotation_key="type",
-    #     )
-    #     return filtered_seg.to_string()
-
-    #     merged_seg = segmenter.concatenate([sampled_seg, filtered_seg])
-
-    #     return merged.seg.to_string()
-
-
-
-    #     for segment in Segmentation:
-    #         print segment.annotations ['type']
-
-    #     print [s.annotations['type'] for s in Segementation]
-    #     print set ([s.annotations['type']for s in Segementation])
-
-    #     return TextInput.get_annotation_keys()
-
 
     def browse(self):
         self.lien_ttgg = unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger'))
@@ -179,8 +147,6 @@ class OWTreetagger(OWWidget):
 
                 # On appel la fonction tag
                 tagged_text = self.tag(segment.get_content())
-                # On definit des variables temporaies
-
 
                 # On remplis la chaine temporaire (temp_string) des valeurs contenue dans la liste de liste self.inputData_tag
                 for element in range(len(tagged_text)-1): #ENLEVER -1 SI PAS DE LIGNES VIDES DANS tag()
@@ -197,64 +163,60 @@ class OWTreetagger(OWWidget):
             self.infoLine.setText(seg.to_string())
             self.send('Text data', seg, self)
 
-                    #temp_list_elem = append(temp_elem_keys)
-                # Depend de la facon d'affecter un element annotation
-                #for element in range(len(temp_list_elem)):
-                    #self.inputData = temp_list_elem[element]
-                    #self.inputData = {annotation_keys: temp_list_annot[element]}
-                    #return self.output
 
-                # # separe a chaque espace ajouter les caractere "?,.!:; et autres..."
-                # self.inputData_col = self.inputData.replace(" ", "\n",) # "?", ",",".","!",":",";","'") #ajout de ponctuation de Michael
-
-                # # code pour montrer ce que ca donne et je rajoute TextInput pour apre""s (mettre label)
-                # result = self.inputData_col + self.TextInput
-                # self.infoLine.setText(
-                #     ' %s = %s' % ( self.TextInput, result)
-                # )
-                # self.send('TextInput', result)
-
-    def tag(self, inputData, language='english') :
+    def tag(self, texte, language='english') :
 
         #On verifie que l'on a un input et un path pour treetagger:
-        if self.lien_ttgg != "" :
-            inputData = self.inputData
-
-        #Sinon, on s'echappe:
-        else :
+        if self.lien_ttgg == "" :
             browse()
 
-        #texte= avec  apres chanque mot et ponctuation \n
-        texte="Bonjour\nca\nva\n?"   #.join(inputData.data) # ATTENTION POUR LE MOMENT CA NE METS PAS LA PONCTUATION A LA LIGNE
+        replacable = [" ","?", ",",".","!",":",";","'")]    #TESTER!!!!!!!!!!!!!!!
+        for el in replacable:                               #TESTER!!!!!!!!!!!!!!!
+            texte = texte.replace(el, "\n"+el)              #TESTER!!!!!!!!!!!!!!!
+
         tmp = 'tmp_file.txt'
         f = open(tmp, 'w')
-        f.write(self.inputData)
+        f.write(texte)
         f.close()
 
-        commande = self.lien_ttgg + "/" + "bin/tag-" + language + ".bat"
+        commande = [self.lien_ttgg + "/" + "bin/tag-" + language + ".bat", tmp]
+        """ATTENTION: UTILISEZ DIRECTEMENT:
+         bin/tree-tagger (MAC LINUX) ou bin/tree-tagger.exe (WINDOWS) 
+         pour ajouter des options ajoutez chaque option dans la liste commande:
+         exemple: pour la commande contenue dans bin/tag-french.bat:
 
-        output = sp.Popen([commande, tmp], stdout=sp.PIPE)
+        commande= [
+        "perl", 
+        self.lien_ttgg + "cmd\tokenize.pl", 
+        "-f", 
+        "-a", 
+        self.lien_ttgg + "lib\french-abbreviations", 
+        tmp, 
+        "|", #pas sur peut etre il faut utilise deux appels a sb.Popen (A TESTER)
+        self.lien_ttgg + "bin\tree-tagger", 
+        self.lien_ttgg + "lib\french.par",
+        "-token",
+        "-lemma",
+        "-sgml",
+        "-no-unkown"
+        ]
+        """
 
+        output = sp.Popen(commande, stdout=sp.PIPE)
         outtext, err = output.communicate()
-
         outtmp = outtext.split('\n')
         del(outtext)
         out = []
         for i in xrange(len(outtmp)):
             out.append(outtmp[i].split('\t'))
         return out
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 if __name__=='__main__':
     myApplication = QApplication(sys.argv)
     myWidget = OWTreetagger()
     myWidget.show()
-    #segmenter = Segmenter()
     input = Input("How are you?")
-    
     myWidget.processInputData(input)
     myApplication.exec_()
