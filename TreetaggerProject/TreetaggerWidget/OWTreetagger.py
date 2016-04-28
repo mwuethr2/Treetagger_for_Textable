@@ -177,7 +177,28 @@ class OWTreetagger(OWWidget):
             self.saveSettings()
             self.path = ttgg_list_verification
             return self.path
-    
+            
+    def verifier_treetagger(self):
+        #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
+        self.infoBox2.setDisabled(True)
+
+        # si le lien n'est pas trouvee
+        self.infoLine1.setText(
+                "Le lien n'est pas trouve"
+            )
+
+        # la liste dans son dossier
+        ttgg_list_verification = os.listdir('.')
+
+        # la liste qu'il devrait avoir
+        ttgg_list_folder = ['bin/tag-french.bat', 'lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+
+        check = True
+        for file_utile in ttgg_list_folder:
+            check = check and os.path.isfile( replace(self.lien_ttgg + "/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger à l'input (doit pas finir avec /))
+            if not check:
+                break
+
     def tag(self, inputData, path, language='french',   ) :
 
         #On vérifie que l'on a un input et un path pour treetagger:
