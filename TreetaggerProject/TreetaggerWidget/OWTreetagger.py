@@ -1,3 +1,35 @@
+
+Skip to content
+This repository
+
+    Pull requests
+    Issues
+    Gist
+
+    @mwuethr2
+
+You don’t have any verified emails. We recommend verifying at least one email.
+Email verification helps our support team verify ownership if you lose account access and allows you to receive all the notifications you ask for.
+
+6
+0
+
+    0
+
+mwuethr2/Treetagger_for_Textable
+Code
+Issues 0
+Pull requests 2
+Wiki
+Pulse
+Graphs
+Settings
+Treetagger_for_Textable/Test_Annotation
+8f07e50 11 hours ago
+@JocelinPitteloud JocelinPitteloud Update Test_Annotation
+@mwuethr2
+@JocelinPitteloud
+285 lines (213 sloc) 10.1 KB
 """
 <name>Treetagger</name>
 <description>creation de Treetagger widget</description>
@@ -12,7 +44,9 @@ import OWGUI
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
 import ctypes
+import subprocess as sp
 import os
+import re
 
 class OWTreetagger(OWWidget):
     
@@ -43,7 +77,7 @@ class OWTreetagger(OWWidget):
         self.loadSettings()
         
         # Settings and other attribute initializations...
-        self.TextInput = "salut"
+        self.TextInput = ""
 
         # aller chercher le lien TreeTagger si pas deja la
         if self.lien_ttgg is None:
@@ -51,6 +85,8 @@ class OWTreetagger(OWWidget):
         
         self.inputData = None   # NB: not a setting.
         self.segmenter = Segmenter()
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------        
         # User interface
@@ -101,6 +137,36 @@ class OWTreetagger(OWWidget):
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # definitions
     
+#Annotations bloc repris du cours progtextI 
+    
+    # def annotations(self):
+    
+    #     sampled_seg,discarded_seg = segmenter.sample(input_seg, 10)
+    #     return sampled_seg.to_string()
+        
+       
+        
+    #     filtered_seg, _ = segmenter.select(
+    #         input_seg, 
+    #         re.compile(r'voyelle'),
+    #         annotation_key="type",
+    #     )
+    #     return filtered_seg.to_string()
+        
+    #     merged_seg = segmenter.concatenate([sampled_seg, filtered_seg])
+        
+    #     return merged.seg.to_string()
+        
+        
+        
+    #     for segment in Segmentation:
+    #         print segment.annotations ['type']
+            
+    #     print [s.annotations['type'] for s in Segementation]
+    #     print set ([s.annotations['type']for s in Segementation])
+        
+    #     return TextInput.get_annotation_keys()
+
     def browse(self):
         self.lien_ttgg = unicode(
             QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')
@@ -141,13 +207,47 @@ class OWTreetagger(OWWidget):
                 self.browse()
             
             self.saveSettings()
-       
+            self.path = ttgg_list_verification
+            return self.path
+    
+    def tag(self, inputData, path, language='french',   ) :
+
+        #On vérifie que l'on a un input et un path pour treetagger:
+        if self.inputData != None and self.path != "" :
+            inputData = str(self.inputData)
+            path = str(self.path)
+            language = str(self.language)
+
+        #Sinon, on s'echappe:
+        else :
+            break
+
+        #texte= avec  après chanque mot et ponctuation \n
+        self.texte= "\n".join(inputData)
+
+        tmp = 'tmp_file.txt'
+        f = open(tmp, 'w')
+        f.write(self.texte)
+        f.close()
+         
+        commande = path + "/" + "bin/tag-" + language + ".bat"
+
+        output = sp.Popen([commande, tmp], stdout=sp.PIPE)
+
+
+        outtext, err = output.communicate()
+        outtmp = outtext.split('\n')
+        del(outtext)
+        self.out = []
+        for i in xrange(outtmp):
+            out.append(outtmp[i].split('\t'))
+        return self.out
+
     #recoit l'input
-    def processInputData(self, inputData):
+    def processInputData(self, inputData, path):
 
         # ici on prend le input 
         self.inputData = inputData[0].get_content()
-        
         # Send data to output.
         self.sendData()
         
@@ -158,18 +258,54 @@ class OWTreetagger(OWWidget):
             self.infoLine.setText('No input.')
             self.send('TextInput', None)
         else:
-        
-            # separe a chaque espace ajouter les caractere "?,.!:; et autres..." 
-            self.inputData_col = self.inputData.replace(" ", "\n") 
+            # On appel la fonction tag
+            self.inputData_tag = tag(self.inputData,self.path)
+            # On définit des variables temporaies
+            temp_string = ""
+            temp_annotation =""
+            temp_list_elem = ()
+            temp_list_annot = ()
+
+            # On remplis la chaine temporaire (temp_string) des valeurs contenue dans la liste de liste self.inputData_tag
+            for element in range(len(self.inputData_tag))
+                temp_string += (self.inputData_tag[element][0] + "\n")
+                temp_annotation += (self.inputData_tag[element][1] + "\n")
+
+            temp_annotation_keys, _ = segmenter.select(
+                temp_annotation, 
+                re.compile(r'\w*\n'),
+            ) 
+
+            temp_list_annot = append(temp_annotation_keys)
+
+            for i in len(temp_list_annot) :
+                temp_annotation_keys, _ = segmenter.select(
+                    temp_string, 
+                    re.compile(r'\w*\n'),
+                ) 
+
+                temp_list_elem = append(temp_elem_keys)
+            # Dépend de la façon d'affecter un element annotation
+            for element in range(len(temp_list_elem)):
+                self.inputData temp_list_elem[element]
+                self.inputData = {annotation_keys: temp_list_annot[element]}
+                return self.output
+
+            # # separe a chaque espace ajouter les caractere "?,.!:; et autres..." 
+            # self.inputData_col = self.inputData.replace(" ", "\n",) # "?", ",",".","!",":",";","'") #ajout de ponctuation de Michael
             
-            # code pour montrer ce que ca donne et je rajoute TextInput pour après (mettre label)
-            result = self.inputData_col + self.TextInput 
-            self.infoLine.setText(
-                ' %s = %s' % ( self.TextInput, result)
-            )
-            self.send('TextInput', result)
+            # # code pour montrer ce que ca donne et je rajoute TextInput pour apre""s (mettre label)
+            # result = self.inputData_col + self.TextInput 
+            # self.infoLine.setText(
+            #     ' %s = %s' % ( self.TextInput, result)
+            # )
+            # self.send('TextInput', result)
             
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 if __name__=='__main__':
     myApplication = QApplication(sys.argv)
@@ -178,4 +314,8 @@ if __name__=='__main__':
     #segmenter = Segmenter()
     myWidget.processInputData(u"How are you?")
     myApplication.exec_()
-    
+
+    Status API Training Shop Blog About 
+
+    © 2016 GitHub, Inc. Terms Privacy Security Contact Help 
+
