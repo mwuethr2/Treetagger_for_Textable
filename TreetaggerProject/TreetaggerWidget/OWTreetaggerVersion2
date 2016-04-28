@@ -131,69 +131,31 @@ class OWTreetagger(OWWidget):
 
     #     return TextInput.get_annotation_keys()
 
-    def browse(self):
-        self.lien_ttgg = unicode(
-            QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')
-            )
-
-        if self.lien_ttgg == "":
-            ctypes.windll.user32.MessageBoxA(0, "Entrez un lien, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
+       def browse(self):
+        self.lien_ttgg = unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger'))
+        if self.lien_ttgg == "" or not verifier_treetagger():
+            #donne info sur le lien
             self.browse()
+        self.saveSettings()
 
-        else:
-            # va dans l'adresse rentre par l'utilisateur
-            os.chdir(self.lien_ttgg)
-
-            # la liste dans son dossier
-            ttgg_list_verification = os.listdir('.')
-
-            # la liste qu'il devrait avoir
-            ttgg_list_folder = ['bin', 'cmd', 'INSTALL.txt', 'INSTALL.txt~', 'lib', 'README.txt']
-
-            # je verifier qu'elle soit identique sauf le dernier
-            compteur = 0
-            for i in range (len(ttgg_list_folder)):
-
-                if ttgg_list_folder[i] in ttgg_list_verification:
-                    compteur+=1
-
-            if compteur == len(ttgg_list_folder):
-
-                #remettre compteur a 0 si modifie le lien !
-                compteur = 0
-
-                # ok le lien est correcte
-                return
-
-            else:
-                #donne info sur le lien
-                ctypes.windll.user32.MessageBoxA(0, "Votre lien est incorecte, veuillez recommencer !\n\nREMARQUE :\n\nle chemin pour retrouver Treetagger doit contenir 5 fichier:\n- 'bin',\n- 'cmd',\n- 'INSTALL.txt',\n- 'INSTALL.txt~',\n- 'lib',\n- 'README.txt' ", "Erreur", 0) # http://stackoverflow.com/questions/2963263/how-can-i-create-a-simple-message-box-in-python
-                self.browse()
-
-            self.saveSettings()
-            self.path = ttgg_list_verification
-            return self.path
 
     def verifier_treetagger(self):
         #si reclique sur bouton et change lien desactiver bouton au cas ou lien faux
         self.infoBox2.setDisabled(True)
 
         # si le lien n'est pas trouvee
-        self.infoLine1.setText(
-                "Le lien n'est pas trouve"
-            )
-
-        # la liste dans son dossier
-        ttgg_list_verification = os.listdir('.')
+        self.infoLine1.setText("Le lien n'est pas trouve")
 
         # la liste qu'il devrait avoir
-        ttgg_list_folder = ['bin/tag-french.bat', 'lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        ttgg_list_folder = ['lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        #attention aux systemes d'explotataion (les fichiers changet (MAC WINDOWS))! import platform
 
         check = True
         for file_utile in ttgg_list_folder:
             check = check and os.path.isfile( replace(self.lien_ttgg + "/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger a l'input (doit pas finir avec /))
             if not check:
                 break
+        return check
 
     #recoit l'input
     def processInputData(self, inputData):
