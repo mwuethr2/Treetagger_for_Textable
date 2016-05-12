@@ -35,14 +35,14 @@ class OWTreetagger(OWWidget):
         # Channel definitions...
         self.inputs = [('Text Input', Segmentation, self.processInputData), Single]
         self.outputs = [('Text data', Segmentation)]
-
+        
+        self.created_inputs = list()
         self.options_ttgg = False
         self.langue = "francais"
         self.word_label = ""
 
         self.lien_ttgg = None
         self.loadSettings()
-        self.lien_ttgg = None
 
         # aller chercher le lien TreeTagger si pas deja la
       
@@ -169,7 +169,6 @@ class OWTreetagger(OWWidget):
         self.sendData()
 
     def sendData(self):
-        self.inputs = list()
         segmenter = Segmenter()
         # Important: if input data is None, propagate this value to output...
         if len(self.inputData) == 0:
@@ -177,97 +176,65 @@ class OWTreetagger(OWWidget):
             self.send('Text data', None)
         else:
             self.infoLine.setText(self.inputData.to_string())
-            for segment in self.inputData:
-
+            new_segmentations = list()
+            for in_segment in self.inputData:
+                print("HELLO")
                 # On appel la fonction tag
-                print segment.get_content()
-                tagged_text = self.tag(segment.get_content())
-                print tagged_text
+                print in_segment.get_content()
+                tagged_text = self.tag(in_segment.get_content())
                 # On definit des variables temporaies
+                """  [
+                ['Hello', 'UH', 'Hello\r'], 
+                ['world', 'NN', 'world\r'], 
+                ['BOB', 'NP', 'Bob\r'],
+                ['bob', 'NN', 'bob\r'], 
+                ['bob', 'NN', 'bob\r'], 
+                ['']
+                ]"""
                 
-                """
-                self.compteur = 0
-                self.type = []
-                self.lemma = []
-                # On remplis la chaine temporaire (temp_string) des valeurs contenue dans la liste de liste self.inputData_tag
-                for element in range(len(tagged_text)-1): #ENLEVER -1 SI PAS DE LIGNES VIDES DANS tag()
-                    Inputelem = input(tagged_text[element][0]) + " "
-                    self.Inputelem.append(Input)
-                    self.compteur += 1
-                    self.type[element] = input(tagged_text[element][1])
-                    self.lemma[element] = input(tagged_text[element][2])
+                
+                text = "\n".join([elem[0] for elem in tagged_text])
+                print text
+                new_input = Input(text)
+                self.created_inputs.append(new_input) #effacer les input dans delete widget
+                new_segmentation = segmenter.tokenize(new_input, [(re.compile(r"\n"), "Split")])
 
-                for element in range(self.compteur-1):
-                    #On recupere le premier element
-                    self.catch = re.match("\w+",self.Inputelem)
+                in_annotations = in_segment.annotations.copy()
+                   
+                for new_seg_idx in xrange(len(new_segmentation)):
+                    new_annotations = in_annotations.copy()
+                    new_annotations.update({
+                        "POS":  tagged_text[new_seg_idx][1],
+                        "lemma": tagged_text[new_seg_idx][2],
+                        "word": tagged_text[new_seg_idx][0],   #juste pour verifier                     
+                    })
+                    new_segmentation[new_seg_idx].annotations = new_annotations
+                new_segmentations.append(new_segmentation)
+                
+                
+            output_segmentation = segmenter.concatenate(new_segmentations)
+            print(output_segmentation.to_string())
 
-                    #On definit un compteur de debut et de fin
-                    self.compteur2 = 0
-                    self.compteur_taille = len(self.catch.group(0))
+            self.send('Text data', output_segmentation, self)
 
-                    #On defini un element de classe address avec ces proprietes
-                    _temp_address = address.__init__(element, self.compteur2, self.compteur2 + self.compteur_taille)
 
-                    #On update nos compteurs ainsi que notre chaine d element
-                    #(On retire le premier element, toujours en memoire dans self.catch.group(0)
-                    # ainsi qu un caractere supplementaire, l espace.)
-                    self.compteur2 += self.compteur_taille
-                    self.Inputelem = self.Inputelem[(self.compteur2+1):]
-
-                    #On creer un nouveau segment Out_seg auquel on donne l adresse temporaire
-                    Out_seg = segment.__init__(_temp_address)
-
-                    #On reinitalise l adress temporaire et le self.catch
-                    _temp_address.index_str = 0
-                    _temp_address.start = 0
-                    _temp_address.end = 0
-                    del self.catch
-
-                    #On ajoute alors les annotations grace a update
-                    Out_seg.segment[element].annotations.update({
-                        'tag': self.type[element],
-                        'lemma': self.lemma[element]
-                        })
-                    self.inputs.append(Out_seg)
-                """
-
-            #On envoie les donnees traitees
-            seg = segmenter.concatenate(self.inputs)
-            print seg.to_string()
-            self.infoLine.setText(seg.to_string())
-            self.send('Text data', seg, self)
-
-                    #temp_list_elem = append(temp_elem_keys)
-                # Depend de la facon d'affecter un element annotation
-                #for element in range(len(temp_list_elem)):
-                    #self.inputData = temp_list_elem[element]
-                    #self.inputData = {annotation_keys: temp_list_annot[element]}
-                    #return self.output
-
-                # # separe a chaque espace ajouter les caractere "?,.!:; et autres..."
-                # self.inputData_col = self.inputData.replace(" ", "\n",) # "?", ",",".","!",":",";","'") #ajout de ponctuation de Michael
-
-                # # code pour montrer ce que ca donne et je rajoute TextInput pour apre""s (mettre label)
-                # result = self.inputData_col + self.TextInput
-                # self.infoLine.setText(
-                #     ' %s = %s' % ( self.TextInput, result)
-                # )
-                # self.send('TextInput', result)
-
-    def tag(self, inputData, language='french') :
+    def tag(self, inputData) :
 
         #On verifie que l'on a un input et un path pour treetagger:
         if self.lien_ttgg == "" :
             browse()
 
         #texte= avec  apres chanque mot et ponctuation \n
-        #texte="Bonjour\nca\nva\n?"   #.join(inputData.data) # ATTENTION POUR LE MOMENT CA NE METS PAS LA PONCTUATION A LA LIGNE
+        #texte="Bonjour\nca\nva\n?"   #.join(inputData.data) 
+        
+        ##### ATTENTION POUR LE MOMENT CA NE METS PAS LA PONCTUATION A LA LIGNE ######
+        ###### !!!!!!!!!!!!!!!!! A FAIRE !!!!!!!!!!!!!!!!!!!!!###################
         tmp = 'tmp_file.txt'
         f = open(tmp, 'w')
         f.write(inputData)
         f.close()
 
-        commande = self.lien_ttgg + "/" + "bin/tag-" + language + ".bat"
+        commande = self.lien_ttgg + "/" + "bin/tag-" + self.langue + ".bat"
 
         output = sp.Popen([commande, tmp], stdout=sp.PIPE)
 
@@ -278,17 +245,14 @@ class OWTreetagger(OWWidget):
         out = []
         for i in xrange(len(outtmp)):
             out.append(outtmp[i].split('\t'))
-        return out
+        return [elem for elem in out if len(elem) == 3]
+        
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 if __name__ == '__main__':
     myApplication = QApplication(sys.argv)
     myWidget = OWTreetagger()
     myWidget.show()
     #segmenter = Segmenter()
-    myWidget.processInputData(Input("Hello world BOB bob bob"))
+    myWidget.processInputData(Input("Hello world BOB bob\n bob"))
     myApplication.exec_()
