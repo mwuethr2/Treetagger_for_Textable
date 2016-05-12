@@ -238,6 +238,8 @@ class OWTreetagger(OWWidget):
             #self.infoLine.setText('No input.')
             self.send('Text data', None)
         else:
+            #On efface les anciennes valeurs
+            self.clearCreatedInputs()
             #self.infoLine.setText(self.inputData.to_string())
             new_segmentations = list()
             for in_segment in self.inputData:
@@ -363,7 +365,26 @@ class OWTreetagger(OWWidget):
             
     def advence(self):
         pass
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    def clearCreatedInputs(self):
+        """Delete all Input objects that have been created."""
+        # Delete strings...
+        for i in self.created_inputs:
+            i.clear()
+        # Empty list of created inputs.
+        del self.created_inputs[:]
+        # Delete those created inputs that are at the end of the string store.
+        for i in reversed(xrange(len(Segmentation.data))):
+            if Segmentation.data[i] is None:
+                Segmentation.data.pop(i)
+            else:
+                break
+    
+    #ne fonctionne pas pour l'instant
+    def onDeleteWidget(self):
+        """Free memory when widget is deleted (overriden method)"""
+        self.clearCreatedInputs()
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__=='__main__':
     myApplication = QApplication(sys.argv)
