@@ -4,7 +4,7 @@
 <icon>path_to_icon.svg</icon>
 <priority>11</priority> 
 """
-
+__version__ = u'0.1.0'
 # Standard imports...
 import Orange
 from OWWidget import *
@@ -380,10 +380,27 @@ class OWTreetagger(OWWidget):
             else:
                 break
     
-    #ne fonctionne pas pour l'instant
+    #fonctionne ?
+   
     def onDeleteWidget(self):
         """Free memory when widget is deleted (overriden method)"""
         self.clearCreatedInputs()
+        print "Done"
+    
+    
+    def getSettings(self, *args, **kwargs):
+        """Read settings, taking into account version number (overriden)"""
+        settings = OWWidget.getSettings(self, *args, **kwargs)
+        settings["settingsDataVersion"] = __version__.split('.')[:2]
+        return settings
+
+    def setSettings(self, settings):
+        """Write settings, taking into account version number (overriden)"""
+        if settings.get("settingsDataVersion", None) \
+                == __version__.split('.')[:2]:
+            settings = settings.copy()
+            del settings["settingsDataVersion"]
+            OWWidget.setSettings(self, settings)
     #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__=='__main__':
