@@ -42,10 +42,10 @@ class OWTreetagger(OWWidget):
 
         self.lien_ttgg = None
         self.loadSettings()
+        self.lien_ttgg = None
 
         # aller chercher le lien TreeTagger si pas deja la
-        if self.lien_ttgg is None:
-            self.browse()
+      
 
        # self.inputData = None   # NB: not a setting.
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -97,6 +97,8 @@ class OWTreetagger(OWWidget):
             #callback = self.verifier_treetagger,
         )
 
+        if self.lien_ttgg is None:
+            self.browse()
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # definitions
 
@@ -133,7 +135,7 @@ class OWTreetagger(OWWidget):
 
     def browse(self):
         self.lien_ttgg = unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger'))
-        if self.lien_ttgg == "" or not verifier_treetagger():
+        if self.lien_ttgg == "" or not self.verifier_treetagger():
             #donne info sur le lien
             self.browse()
         self.saveSettings()
@@ -144,7 +146,7 @@ class OWTreetagger(OWWidget):
         self.infoBox2.setDisabled(True)
 
         # si le lien n'est pas trouvee
-        self.infoLine1.setText("Le lien n'est pas trouve")
+        self.infoLine.setText("Le lien n'est pas trouve")
 
         # la liste qu'il devrait avoir
         ttgg_list_folder = ['lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
@@ -178,20 +180,58 @@ class OWTreetagger(OWWidget):
             for segment in self.inputData:
 
                 # On appel la fonction tag
+                print segment.get_content()
                 tagged_text = self.tag(segment.get_content())
+                print tagged_text
                 # On definit des variables temporaies
-
-
+                
+                """
+                self.compteur = 0
+                self.type = []
+                self.lemma = []
                 # On remplis la chaine temporaire (temp_string) des valeurs contenue dans la liste de liste self.inputData_tag
                 for element in range(len(tagged_text)-1): #ENLEVER -1 SI PAS DE LIGNES VIDES DANS tag()
-                    input = Input(tagged_text[element][0])
-                    input.segments[0].annotations.update({
-                    'tag': tagged_text[element][1],
-                    'lemma': tagged_text[element][2]
-                    })
-                    self.inputs.append(input)
+                    Inputelem = input(tagged_text[element][0]) + " "
+                    self.Inputelem.append(Input)
+                    self.compteur += 1
+                    self.type[element] = input(tagged_text[element][1])
+                    self.lemma[element] = input(tagged_text[element][2])
 
+                for element in range(self.compteur-1):
+                    #On recupere le premier element
+                    self.catch = re.match("\w+",self.Inputelem)
 
+                    #On definit un compteur de debut et de fin
+                    self.compteur2 = 0
+                    self.compteur_taille = len(self.catch.group(0))
+
+                    #On defini un element de classe address avec ces proprietes
+                    _temp_address = address.__init__(element, self.compteur2, self.compteur2 + self.compteur_taille)
+
+                    #On update nos compteurs ainsi que notre chaine d element
+                    #(On retire le premier element, toujours en memoire dans self.catch.group(0)
+                    # ainsi qu un caractere supplementaire, l espace.)
+                    self.compteur2 += self.compteur_taille
+                    self.Inputelem = self.Inputelem[(self.compteur2+1):]
+
+                    #On creer un nouveau segment Out_seg auquel on donne l adresse temporaire
+                    Out_seg = segment.__init__(_temp_address)
+
+                    #On reinitalise l adress temporaire et le self.catch
+                    _temp_address.index_str = 0
+                    _temp_address.start = 0
+                    _temp_address.end = 0
+                    del self.catch
+
+                    #On ajoute alors les annotations grace a update
+                    Out_seg.segment[element].annotations.update({
+                        'tag': self.type[element],
+                        'lemma': self.lemma[element]
+                        })
+                    self.inputs.append(Out_seg)
+                """
+
+            #On envoie les donnees traitees
             seg = segmenter.concatenate(self.inputs)
             print seg.to_string()
             self.infoLine.setText(seg.to_string())
@@ -214,7 +254,7 @@ class OWTreetagger(OWWidget):
                 # )
                 # self.send('TextInput', result)
 
-    def tag(self, inputData, language='english') :
+    def tag(self, inputData, language='french') :
 
         #On verifie que l'on a un input et un path pour treetagger:
         if self.lien_ttgg == "" :
@@ -224,7 +264,7 @@ class OWTreetagger(OWWidget):
         #texte="Bonjour\nca\nva\n?"   #.join(inputData.data) # ATTENTION POUR LE MOMENT CA NE METS PAS LA PONCTUATION A LA LIGNE
         tmp = 'tmp_file.txt'
         f = open(tmp, 'w')
-        f.write(self.inputData)
+        f.write(inputData)
         f.close()
 
         commande = self.lien_ttgg + "/" + "bin/tag-" + language + ".bat"
@@ -245,7 +285,7 @@ class OWTreetagger(OWWidget):
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     myApplication = QApplication(sys.argv)
     myWidget = OWTreetagger()
     myWidget.show()
