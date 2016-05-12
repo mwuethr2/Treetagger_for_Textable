@@ -378,8 +378,8 @@ class OWTreetagger(OWWidget):
             if Segmentation.data[i] is None:
                 Segmentation.data.pop(i)
             else:
-                break
-    
+                break 
+        print "effacer"
     #fonctionne ?
    
     def onDeleteWidget(self):
