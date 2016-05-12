@@ -212,6 +212,12 @@ class OWTreetagger(OWWidget):
 
         # la liste qu'il devrait avoir
         ttgg_list_folder = ['lib/french-abbreviations', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        
+        tt_lang = {
+            "french": ["fichiers_fr"],
+            "englis": ["fichiers_en"],
+        
+        }
         #attention aux systemes d'explotataion (les fichiers changet (MAC WINDOWS))! import platform
 
         check = True
@@ -219,6 +225,22 @@ class OWTreetagger(OWWidget):
             check = check and os.path.isfile( replace(self.lien_ttgg + "/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger a l'input (doit pas finir avec /))
             if not check:
                 break
+        
+        if check:
+            lcount = 0
+            for lang in tt_lang.keys():
+                for file in tt_lang[lang]:
+                    checkl = checkl and os.path.isfile( replace(self.lien_ttgg + "/lib/" + file_utile, "//","/") ) # changer (mais verifier le path de treetagger a l'input (doit pas finir avec /))
+                    if not checkl:
+                        break
+                if checkl:
+                    lcount += 1
+                    self.langues.append(lang)
+                
+            #check langues
+                
+                
+        
         return check
             
        
