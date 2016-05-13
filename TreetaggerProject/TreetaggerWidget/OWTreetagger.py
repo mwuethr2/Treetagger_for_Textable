@@ -87,7 +87,7 @@ class OWTreetagger(OWWidget):
             self.browse()
         else:
             self.initialiser_langue()
-            self.langues = self.langue_present()
+            self.langues = self.langue_present
             self.afficher_interface(True)
         
 
@@ -142,6 +142,7 @@ class OWTreetagger(OWWidget):
             self.afficher_interface(False)
         else:
             self.initialiser_langue()
+            self.langues = self.langue_present
             self.afficher_interface(True)
         self.saveSettings()
 
@@ -149,7 +150,7 @@ class OWTreetagger(OWWidget):
     def verifier_treetagger(self):
 
         # la liste qu'il devrait avoir
-        ttgg_list_folder = ['lib/french.par', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
+        ttgg_list_folder = ['lib/french-utf8.par', 'cmd/utf8-tokenize.perl', 'bin/tree-tagger.exe' ]
         #attention aux systemes d'explotataion (les fichiers changet (MAC WINDOWS))! import platform
 
         check = True
@@ -169,13 +170,15 @@ class OWTreetagger(OWWidget):
         # la liste dans son dossier
         langue_verification = os.listdir('.')
         
-        langue_possible = ["french.par"]
+        langue_possible = ["french-utf8.par", "german-utf8.par", "english-utf8.par", "italian-utf8.par", "spanish-utf8.par", "russian-utf8.par", "latin-utf8.par" ]
         self.langue_present = []
 
         for i in xrange(len(langue_possible)):
             if langue_possible[i] in langue_verification:
-                self.langue_present.append(langue_possible[0][:-4])
-                
+                self.langue_present.append(langue_possible[i][:-9])
+        print self.langue_present
+        
+        return self.langue_present
         
     def afficher_interface(self, valeur):
         
@@ -327,9 +330,6 @@ class OWTreetagger(OWWidget):
         f = open(tmp, 'w')
         f.write(inputData)
         f.close()
-        
-        print 'kkk', self.langues
-        print 'kkk', self.langue
 
         commande = unicode( self.lien_ttgg + "/" + "bin/tag-" + self.langues[self.langue] + ".bat" )
         print commande
@@ -366,7 +366,6 @@ class OWTreetagger(OWWidget):
         return [elem for elem in out if len(elem) == 3]
     
     
-            
     def updateGUI(self):
         """Update GUI state"""
         if self.displayAdvancedSettings:
