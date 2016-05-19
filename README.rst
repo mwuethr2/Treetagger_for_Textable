@@ -47,3 +47,4 @@ Une option "advanced settings" apparaît sur notre widget, elle est pour le mome
 
 Messages
 ========
+-Erreur: Treetagger pas disponible sur l'ordinateur
