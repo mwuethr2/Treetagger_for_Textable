@@ -6,21 +6,21 @@ Signal
 ============
 Inputs: Texte brut via text field
 
-Output:
+Output: Dans le display style de mots avec la segmentation
 
 
 Description
 =============
 Le widget Textable Treetagger répond au format Orange Canvas, il utilise Treetagger pour annoter un texte segmenté. 
 
-Notre widget donnera la possibilité de retourner un texte segmenté et analyser selon les critères Treetagger choisis.
+Notre widget donne la possibilité de retourner un texte segmenté et analysé selon les critères Treetagger choisis.
 
 Ce travail est effectué dans le cadre d'un cours universitaire d'informatique pour les sciences humaines, basé sur le logiciel Textable, spécialisé dans l'analyse textuelle. 
 
 Interface de base
 ==================
 Le widget teste la présence ou non de treetagger sur l'ordinateur. Si cette présence est vérifié, il est possible d'utiliser le widget sinon un message d'erreur s'affiche. 
-L'interface de base nous permet de choisir la langue (entre toutes les langues communes).
+L'interface de base nous permet de choisir la langue (choix entre toutes les langues communes).
 
 Aperçu de l'interface:
 
@@ -37,7 +37,8 @@ Aperçu de l'interface:
 1 PHRASE | --> | Mot 1 | annotation: segment: 1 | annotation: TAG: NOM |  segment 2 TEXTE |  
 
 Output: 
-Autant de segmentation que de tokens
+Display style de mots qui sort avec la segmentation
+Autant de segmentations que de tokens
 
 
 
@@ -47,4 +48,6 @@ Une option "advanced settings" apparaît sur notre widget, elle est pour le mome
 
 Messages
 ========
--Erreur: Treetagger pas disponible sur l'ordinateur
+-Erreur mauvais lien
+Treetagger n'est pas disponible sur l'ordinateur ou le lien vers treetagger est incorrect -> bouton s'affiche pour chercher le bon lien treetagger
+-
