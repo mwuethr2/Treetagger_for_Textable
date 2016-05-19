@@ -9,7 +9,7 @@ Inputs: Texte brut via text field
 Output:
 
 
-Description:
+Description
 =============
 Le widget Textable Treetagger répond au format Orange Canvas, il utilise Treetagger pour annoter un texte segmenté. 
 
