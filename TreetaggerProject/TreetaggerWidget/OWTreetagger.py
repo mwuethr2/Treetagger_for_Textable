@@ -266,12 +266,18 @@ class OWTreetagger(OWWidget):
         segmenter = Segmenter()
         # Important: if input data is None, propagate this value to output...
         if not self.inputData:
-            #self.infoLine.setText('No input.')
             self.send('Text data', None)
         else:
-            #self.infoLine.setText(self.inputData.to_string())
+
             new_segmentations = list()
             for in_segment in self.inputData:
+            
+                # Initialize progress bar.
+                progressBar = OWGUI.ProgressBar(
+                    self, 
+                    iterations=len(self.inputData)
+                )       
+                
                 print("HELLO")
                 # On appel la fonction tag
                 print in_segment.get_content()
@@ -296,13 +302,17 @@ class OWTreetagger(OWWidget):
                     })
                     new_segmentation[new_seg_idx].annotations = new_annotations
                 new_segmentations.append(new_segmentation)
-
+                
+                progressBar.advance()   # 1 tick on the progress bar...
 
             output_segmentation = segmenter.concatenate(new_segmentations)
             print(output_segmentation.to_string())
 
             self.send('Text data', output_segmentation, self)
-
+            
+            # Clear progress bar.
+            progressBar.finish()
+            
     def tag(self, inputData) :
 
         print self.lien_ttgg
@@ -317,7 +327,7 @@ class OWTreetagger(OWWidget):
         for ele in a_eliminer:
             inputData = inputData.replace(ele, "")
 
-        replacable = ["?", ",",".","!",":",";","'", " "]
+        replacable = ["?", ",", ".", "!", ":", ";", "'", " "]
         #TESTER!!!!!!!!!!!!!!!
         for el in replacable:                               #TESTER!!!!!!!!!!!!!!!
             inputData = inputData.replace(el, "\n"+el+"\n")            #TESTER!!!!!!!!!!!!!!!
@@ -408,7 +418,6 @@ if __name__=='__main__':
     myApplication = QApplication(sys.argv)
     myWidget = OWTreetagger()
     myWidget.show()
-    #segmenter = Segmenter()
     myWidget.processInputData(Input("salut comment vas tu?"))
     myApplication.exec_()
 
