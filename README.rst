@@ -5,6 +5,7 @@ Treetagger Widget
 Signal:
 ============
 Inputs: Texte brut via text field
+
 Output:
 
 
