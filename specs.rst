@@ -18,7 +18,7 @@ Créer un Widget Textable Treetagger qui utilise TreeTagger_ pour annoter un tex
 * Premiere version de la specification: 17 mars 2016
 * Remise de la specification: 24 mars 2016
 * Version alpha du projet:  28 avril 2016
-* Remise et presentation du projet:  26 mai 2016
+* Remise et presentation du projet:  2 juin 2016
 
 1.3 Equipe et responsabilitées
 ==============================
@@ -54,7 +54,7 @@ Créer un Widget Textable Treetagger qui utilise TreeTagger_ pour annoter un tex
 * Jocelin Pitteloud: jocelin.pitteloud@unil.ch
         * code
         * test
-        * documentation 
+        
 
 
 
