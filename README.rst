@@ -6,7 +6,7 @@ Signal
 ============
 Inputs: Texte brut via text field
 
-Output: Dans le display style de mots avec la segmentation
+Output: dans le  widget display s'affiche le style de mots avec la segmentation
 
 
 Description
@@ -44,7 +44,7 @@ Autant de segmentations que de tokens
 
 Interface avancé
 =================
-Une option "advanced settings" apparaît sur notre widget, elle est pour le moment pas en fonction. A noter que treetagger remplace automatiquement par <unknow> les caractères non reconnus.
+Une option "advanced settings" apparaît sur notre widget, elle n'est pour le moment pas en fonction. A noter que treetagger remplace automatiquement par <unknow> les caractères non reconnus.
 
 Messages
 ========
