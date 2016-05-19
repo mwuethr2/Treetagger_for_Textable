@@ -2,7 +2,7 @@
 Treetagger Widget
 ####################################
 
-Signal:
+Signal
 ============
 Inputs: Texte brut via text field
 
