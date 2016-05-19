@@ -22,7 +22,7 @@ Interface de base
 Le widget teste la présence ou non de treetagger sur l'ordinateur. Si cette présence est vérifié, il est possible d'utiliser le widget sinon un message d'erreur s'affiche. 
 L'interface de base nous permet de choisir la langue (entre toutes les langues communes).
 
-Aperçu de l'inerface:
+Aperçu de l'interface:
 
 *  Treetagger
 
