@@ -5,6 +5,8 @@
 <priority>11</priority>
 """
 
+__version__ = u'0.0.1'
+
 # Standard imports...
 import Orange
 from OWWidget import *
@@ -17,6 +19,7 @@ import subprocess as sp
 import os
 import re
 import sys
+import codecs
 
 class OWTreetagger(OWWidget):
 
@@ -61,13 +64,13 @@ class OWTreetagger(OWWidget):
         self.segmenter = Segmenter()
 
         self.langues_possibles = {
-            "francais": ["french.par", "french-abbreviations"],
-            "anglais":  ["english-utf8.par", "english-abbreviations"],
-            "allemand": ["german-utf8.par", "german-abbreviations"],
-            "italien": ["italian-utf8.par","italian-abbreviations"],
+            "french": ["french.par", "french-abbreviations"],
+            "english":  ["english-utf8.par", "english-abbreviations"],
+            "german": ["german-utf8.par", "german-abbreviations"],
+            "italian": ["italian-utf8.par","italian-abbreviations"],
             "swahili": ["swahili.par", "swahili-abbreviations"],
-            "portuguais" :["portuguese.par", "portuguese-abbreviations"],
-            "russe": ["russian.par", "russian-abbreviations"]
+            "portuguese" :["portuguese.par", "portuguese-abbreviations"],
+            "russian": ["russian.par", "russian-abbreviations"]
         }
 
 
@@ -102,7 +105,7 @@ class OWTreetagger(OWWidget):
     # definitions
 
     def browse(self):
-        self.lien_ttgg = os.path.normpath(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger'), 'utf-8')
+        self.lien_ttgg = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')))
 
 
         if self.lien_ttgg == "" or not self.verifier_treetagger():
@@ -154,9 +157,7 @@ class OWTreetagger(OWWidget):
                 langues_presentes.append(langue)
 
         self.langues = langues_presentes
-        print ( langues_presentes)
-        print (self.langue)
-        print (self.langues)
+
 
     def afficher_interface(self, valeur):
 
@@ -229,7 +230,7 @@ class OWTreetagger(OWWidget):
         self.inputData = inputData
 
         # Send data to output.
-        self.sendData()
+        self.sendButton.sendIf()
 
     def sendData(self):
         segmenter = Segmenter()
@@ -276,6 +277,7 @@ class OWTreetagger(OWWidget):
             progressBar.finish()
 
     def tag(self, inputData) :
+        """
         a_eliminer = ["\n","\t","\r"]
         for ele in a_eliminer:
             inputData = inputData.replace(ele, "")
@@ -286,14 +288,63 @@ class OWTreetagger(OWWidget):
 
         inputData = inputData.replace(" \n", "")
         inputData = inputData.replace("\n\n", "\n")
-        print(type(inputData))
+        """
+        
+        
+        
+        
         tmp = os.path.normpath(os.path.expanduser("~/tmp_file.txt"))
         tmp2 = os.path.normpath(os.path.expanduser("~/tmp_file2.txt"))
+        
         f = open(tmp, 'w')
         f.write(inputData.encode("UTF-8"))
         f.close()
 
-        tmp2 = tmp
+        """
+        Options:
+        -e : English text 
+        -f : French text
+        -i : Italian text
+        -a <file>: <file> contains a list of words which are either abbreviations or
+           words which should not be further split.
+";
+        """
+        option = ""
+        if self.langues[self.langue] == "french":
+            option = "-f"
+        elif self.langues[self.langue] == "english":
+            option = "-e"     
+        elif self.langues[self.langue] == "italian":
+            option = "-i" 
+        
+        if option:
+            commande1= [
+                "perl",
+                os.path.normpath(self.lien_ttgg + "/cmd/utf8-tokenize.perl"),
+                option,
+                "-a",
+                os.path.normpath(self.lien_ttgg + "/lib/" + self.langues_possibles[self.langues[self.langue]][1]),
+                tmp
+            ]
+        else:
+            commande1= [
+                "perl",
+                os.path.normpath(self.lien_ttgg + "/cmd/utf8-tokenize.perl"),
+                "-a",
+                os.path.normpath(self.lien_ttgg + "/lib/" + self.langues_possibles[self.langues[self.langue]][1]),
+                tmp
+            ]            
+        
+        print " ".join(commande1)
+        outcom1 = sp.Popen(commande1, stdout=sp.PIPE)
+        out =  outcom1.communicate()[0].decode(encoding="utf-8", errors="ignore").replace('\r','')
+        print out
+        
+        f = codecs.open(tmp2, 'w')
+        f.write(out.encode("UTF-8"))
+        f.close()
+
+        
         commande2 = [
             os.path.normpath(self.lien_ttgg + "/bin/tree-tagger.exe"),
             os.path.normpath(self.lien_ttgg + "/lib/" + self.langues_possibles[self.langues[self.langue]][0]),
@@ -301,11 +352,11 @@ class OWTreetagger(OWWidget):
             "-lemma",
             "-sgml",
             "-no-unknown",
+            '-quiet',
             tmp2
         ]
         output = sp.Popen(commande2, stdout=sp.PIPE, shell=False)
         outtext = output.communicate()[0].decode(encoding="utf-8", errors="ignore")
-        print(type(outtext))
         outtmp = outtext.split('\n')
 
         del(outtext)
@@ -325,6 +376,42 @@ class OWTreetagger(OWWidget):
 
     def advence(self):
         pass
+        
+    def clearCreatedInputs(self):
+        """Delete all Input objects that have been created."""
+        # Delete strings...
+        for i in self.created_inputs:
+            i.clear()
+        # Empty list of created inputs.
+        del self.created_inputs[:]
+        # Delete those created inputs that are at the end of the string store.
+        for i in reversed(xrange(len(Segmentation.data))):
+            if Segmentation.data[i] is None:
+                Segmentation.data.pop(i)
+            else:
+                break 
+        print "effacer"
+    #fonctionne ?
+   
+    def onDeleteWidget(self):
+        """Free memory when widget is deleted (overriden method)"""
+        self.clearCreatedInputs()
+        print "Done"
+    
+    
+    def getSettings(self, *args, **kwargs):
+        """Read settings, taking into account version number (overriden)"""
+        settings = OWWidget.getSettings(self, *args, **kwargs)
+        settings["settingsDataVersion"] = __version__.split('.')[:2]
+        return settings
+
+    def setSettings(self, settings):
+        """Write settings, taking into account version number (overriden)"""
+        if settings.get("settingsDataVersion", None) \
+                == __version__.split('.')[:2]:
+            settings = settings.copy()
+            del settings["settingsDataVersion"]
+            OWWidget.setSettings(self, settings)
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__=='__main__':
