@@ -1,7 +1,7 @@
 """
 <name>Treetagger</name>
 <description>creation de Treetagger widget</description>
-<icon>path_to_icon.svg</icon>
+<icon>TTGG_img.png</icon>
 <priority>11</priority>
 """
 
