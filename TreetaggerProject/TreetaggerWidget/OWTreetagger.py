@@ -343,7 +343,7 @@ class OWTreetagger(OWWidget):
         self.inputData = inputData
 
         # Send data to output.
-        #   self.sendButton.sendIf()
+        self.sendButton.sendIf()
 
     def sendData(self):
         segmenter = Segmenter()
