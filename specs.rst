@@ -115,7 +115,7 @@ ainsi que les options d'analyse choisies (2 langues à choix, output for each to
 2.4 Fonctionnalités optionelles
 ===============================
 * ajouter d'autres options treetagger
-
+* compatibilité avec tous les OS (Mac, Linux et Windows)
 
 
 2.5 Tests
