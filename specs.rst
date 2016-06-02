@@ -108,8 +108,8 @@ ainsi que les options d'analyse choisies (2 langues à choix, output for each to
 * Segmentation Treetagger
 * Utilisation de lemmes
 * Output autant de segmentations que de tokens
-* Options de 2 langues à choix, output for each token, input option,.. TODO
-* Choix de langue, français par défaut (anglais en plus si tout fonctionne)
+* Options de 4 langues à choix, output for each token, input option,.. TODO
+* Choix de langue, german par défaut (choix dû à l'ordre alphabétique des langues)
 * Si un widget treetagger est déjà utilisé dans le travail en cours, ne pas redemander le lien pour treetagger et réutiliser celui entré précédemment.
 
 2.4 Fonctionnalités optionelles
