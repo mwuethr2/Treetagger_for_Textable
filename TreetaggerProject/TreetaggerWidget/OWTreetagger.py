@@ -11,7 +11,7 @@ __version__ = u'0.0.1'
 import Orange
 from OWWidget import *
 import OWGUI
-from _textable.widgets.TextableUtils import * 
+from _textable.widgets.TextableUtils import *
 from _textable.widgets.LTTL.Input import Input
 from _textable.widgets.LTTL.Segmenter import Segmenter
 from _textable.widgets.LTTL.Segmentation import Segmentation
@@ -40,7 +40,7 @@ class OWTreetagger(OWWidget):
         #Widget creator
         OWWidget.__init__(self, parent, signalManager, wantMainArea=0)
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
         # Channel definitions...
         self.inputs = [('Text Input', Segmentation, self.processInputData), Single]
         self.outputs = [('Text data', Segmentation)]
@@ -64,8 +64,8 @@ class OWTreetagger(OWWidget):
         self.lien_cmd = None
         self.loadSettings()
         self.uuid = getWidgetUuid(self)
-        
-        
+
+
         # Other attributes...
         self.inputData = None
         self.segmenter = Segmenter()
@@ -74,14 +74,14 @@ class OWTreetagger(OWWidget):
             "french": ["french.par", "french-abbreviations"],
             "english":  ["english-utf8.par", "english-abbreviations"],
             "german": ["german-utf8.par", "german-abbreviations"],
-            "italian": ["italian-utf8.par","italian-abbreviations"],
+            "italian": ["italian-utf8.par", "italian-abbreviations"],
             "swahili": ["swahili.par", "swahili-abbreviations"],
             "portuguese" :["portuguese.par", "portuguese-abbreviations"],
             "russian": ["russian.par", "russian-abbreviations"]
         }
 
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
 
         #bouton pour trouver lien ttgg
         self.infoBox3 = OWGUI.widgetBox(
@@ -89,7 +89,7 @@ class OWTreetagger(OWWidget):
             u"")
 
         OWGUI.widgetLabel(
-            widget = self.infoBox3,
+            widget=self.infoBox3,
             label="Rappel :\n\nSous Windows\nle chemin pour retrouver Treetagger doit contenir"
                   "3 fichier:\n- 'bin', qui lui contient le fichier 'tree-tagger.exe'"
                   "\n- 'cmd', qui lui contient les fichiers 'utf8-tokenize.perl' et 'tokenize.pl'"
@@ -104,7 +104,7 @@ class OWTreetagger(OWWidget):
                 widget=self.infoBox3,
                 master=self,
                 label='Veuillez entrer le lien correct vers treetagger',
-                callback = self.browse,
+                callback=self.browse,
             )
         else:
             self.infoBox_cmd = OWGUI.widgetBox(
@@ -114,31 +114,31 @@ class OWTreetagger(OWWidget):
                 widget=self.infoBox_cmd,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier cmd',
-                callback = self.cmd,
+                callback=self.cmd,
             )
-            
+
             self.infoBox_bin = OWGUI.widgetBox(
                 self.controlArea,
                 u"")
-                
+
             OWGUI.button(
                 widget=self.infoBox_bin,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier bin',
-                callback = self.bin,
-            )  
-                
+                callback=self.bin,
+            )
+
             self.infoBox_lib = OWGUI.widgetBox(
                 self.controlArea,
                 u"")
-                
+
             OWGUI.button(
                 widget=self.infoBox_lib,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier lib',
-                callback = self.lib,
+                callback=self.lib,
             )
-                
+
 
         # aller chercher le lien TreeTagger si pas deja la
         if self.lien_ttgg is None or self.lien_bin is None or self.lien_cmd is None or self.lien_lib is None:
@@ -147,7 +147,7 @@ class OWTreetagger(OWWidget):
         else:
             self.initialiser_langue()
             self.afficher_interface(True)
-    
+
     # definitions
     def bin(self):
         self.lien_bin = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien bin')))
@@ -157,8 +157,8 @@ class OWTreetagger(OWWidget):
             self.initialiser_langue()
             self.afficher_interface(True)
         self.saveSettings()
-        
-        
+
+
     def lib(self):
         self.lien_lib = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien lib')))
         if not self.verifier_treetagger():
@@ -167,8 +167,8 @@ class OWTreetagger(OWWidget):
             self.initialiser_langue()
             self.afficher_interface(True)
         self.saveSettings()
-        
-        
+
+
     def cmd(self):
         self.lien_cmd = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien cmd')))
         if not self.verifier_treetagger():
@@ -178,9 +178,9 @@ class OWTreetagger(OWWidget):
             self.afficher_interface(True)
         self.saveSettings()
 
-    
+
     def chemin_acces(self):
-            
+
         #if self.system == "nt":
         self.lien_lib = os.path.normpath(self.lien_ttgg + "/lib/")
         self.lien_cmd = os.path.normpath(self.lien_ttgg + "/cmd/")
@@ -189,10 +189,10 @@ class OWTreetagger(OWWidget):
          #   pass
         #else:
          #   pass
-        
+
     def browse(self):
         self.lien_ttgg = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')))
-        
+
         self.chemin_acces()
 
         if self.lien_ttgg == "" or not self.verifier_treetagger():
@@ -209,7 +209,7 @@ class OWTreetagger(OWWidget):
             self.initialiser_langue()
             self.afficher_interface(True)
         self.saveSettings()
-       
+
     def verifier_treetagger(self):
 
         # la liste qu'il devrait avoir
@@ -219,7 +219,7 @@ class OWTreetagger(OWWidget):
         else:
             ttgg_list_folder_cmd = ['utf8-tokenize.perl', "tokenize.pl"]
             folder_bin = 'tree-tagger'
-            
+
         check_cmd = True
         check_lib = True
         check_bin = True
@@ -228,13 +228,13 @@ class OWTreetagger(OWWidget):
             check_cmd = check_cmd and os.path.isfile(os.path.normpath(self.lien_cmd + "/" + file_utile1))
             if not check_cmd:
                 break
-        
+
         check_bin = check_bin and os.path.isfile(os.path.normpath(self.lien_bin + "/" + folder_bin))
-        
+
         check_lib = check_lib and os.path.isdir(os.path.normpath(self.lien_lib + "/"))
-        
-        check = check_bin and check_cmd and check_lib 
-        
+
+        check = check_bin and check_cmd and check_lib
+
         if self.system != "nt":
             if check_bin:
                 self.infoBox_bin.setVisible(False)
@@ -242,7 +242,7 @@ class OWTreetagger(OWWidget):
                 self.infoBox_cmd.setVisible(False)
             if check_lib:
                 self.infoBox_lib.setVisible(False)
-            
+
         return check
 
 
@@ -256,7 +256,7 @@ class OWTreetagger(OWWidget):
         for langue in self.langues_possibles.keys():
             check = True
             for file_utile in self.langues_possibles[langue]:
-                check = check and os.path.isfile( 
+                check = check and os.path.isfile(
                     os.path.normpath(self.lien_lib +"/"+ file_utile)
                 )
                 if not check:
@@ -267,12 +267,12 @@ class OWTreetagger(OWWidget):
         self.langues = langues_presentes
 
 
-        
+
     def afficher_interface(self, valeur):
 
         self.infoBox3.setVisible(True)
 
-        if valeur :
+        if valeur:
             if self.system != "nt":
                 self.infoBox_lib.setVisible(False)
                 self.infoBox_cmd.setVisible(False)
@@ -309,10 +309,10 @@ class OWTreetagger(OWWidget):
                 addSpace=True)
 
             self.langueBox = OWGUI.comboBox(
-                widget = self.infoBox1,
-                master = self,
+                widget=self.infoBox1,
+                master=self,
                 value='langue',
-                items = self.langues,
+                items=self.langues,
                 )
 
 
@@ -389,33 +389,31 @@ class OWTreetagger(OWWidget):
             # Clear progress bar.
             progressBar.finish()
 
-    def tag(self, inputData) :
+    def tag(self, inputData):
         """
         a_eliminer = ["\n","\t","\r"]
         for ele in a_eliminer:
             inputData = inputData.replace(ele, "")
-
         replacable = ["?", ",", ".", "!", ":", ";", "'", " "]
         for el in replacable:
             inputData = inputData.replace(el, "\n"+el+"\n")
-
         inputData = inputData.replace(" \n", "")
         inputData = inputData.replace("\n\n", "\n")
         """
-        
-        
-        
-        
+
+
+
+
         tmp = os.path.normpath(os.path.expanduser("~/tmp_file.txt"))
         tmp2 = os.path.normpath(os.path.expanduser("~/tmp_file2.txt"))
-        
+
         f = open(tmp, 'w')
         f.write(inputData.encode("UTF-8"))
         f.close()
 
         """
         Options:
-        -e : English text 
+        -e : English text
         -f : French text
         -i : Italian text
         -a <file>: <file> contains a list of words which are either abbreviations or
@@ -426,12 +424,12 @@ class OWTreetagger(OWWidget):
         if self.langues[self.langue] == "french":
             option = "-f"
         elif self.langues[self.langue] == "english":
-            option = "-e"     
+            option = "-e"
         elif self.langues[self.langue] == "italian":
-            option = "-i" 
-        
+            option = "-i"
+
         if option:
-            commande1= [
+            commande1 = [
                 "perl",
                 os.path.normpath(self.lien_cmd + "/" + "utf8-tokenize.perl"),
                 option,
@@ -440,22 +438,22 @@ class OWTreetagger(OWWidget):
                 tmp
             ]
         else:
-            commande1= [
+            commande1 = [
                 "perl",
                 os.path.normpath(self.lien_cmd + "/" + "utf8-tokenize.perl"),
                 "-a",
                 os.path.normpath(self.lien_lib + "/" + self.langues_possibles[self.langues[self.langue]][1]),
                 tmp
-            ]            
-        
+            ]
+
         outcom1 = sp.Popen(commande1, stdout=sp.PIPE)
-        out =  outcom1.communicate()[0].decode(encoding="utf-8", errors="ignore").replace('\r','')
-        
+        out = outcom1.communicate()[0].decode(encoding="utf-8", errors="ignore").replace('\r', '')
+
         f = codecs.open(tmp2, 'w')
         f.write(out.encode("UTF-8"))
         f.close()
 
-        
+
         commande2 = [
             os.path.normpath(self.lien_bin + "/" + "tree-tagger.exe"),
             os.path.normpath(self.lien_lib + "/" + self.langues_possibles[self.langues[self.langue]][0]),
@@ -470,7 +468,7 @@ class OWTreetagger(OWWidget):
         outtext = output.communicate()[0].decode(encoding="utf-8", errors="ignore")
         outtmp = outtext.split('\n')
 
-        del(outtext)
+        del outtext
         out = []
         for i in xrange(len(outtmp)):
             out.append(outtmp[i].split('\t'))
@@ -487,7 +485,7 @@ class OWTreetagger(OWWidget):
 
     def advence(self):
         pass
-        
+
     def clearCreatedInputs(self):
         """Delete all Input objects that have been created."""
         # Delete strings...
@@ -500,15 +498,15 @@ class OWTreetagger(OWWidget):
             if Segmentation.data[i] is None:
                 Segmentation.data.pop(i)
             else:
-                break 
+                break
     #fonctionne ?
-   
+
     def onDeleteWidget(self):
         """Free memory when widget is deleted (overriden method)"""
         self.clearCreatedInputs()
 
-    
-    
+
+
     def getSettings(self, *args, **kwargs):
         """Read settings, taking into account version number (overriden)"""
         settings = OWWidget.getSettings(self, *args, **kwargs)
@@ -522,9 +520,9 @@ class OWTreetagger(OWWidget):
             settings = settings.copy()
             del settings["settingsDataVersion"]
             OWWidget.setSettings(self, settings)
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
 
-if __name__=='__main__':
+if __name__ == '__main__':
     myApplication = QApplication(sys.argv)
     myWidget = OWTreetagger()
     myWidget.show()
