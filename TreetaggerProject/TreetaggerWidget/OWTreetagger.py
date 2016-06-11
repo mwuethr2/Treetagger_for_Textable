@@ -126,7 +126,7 @@ class OWTreetagger(OWWidget):
                 widget=self.infoBox_cmd,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier cmd',
-                callback=self.cmd,
+                callback=self.get_cmd,
             )
 
             self.infoBox_bin = OWGUI.widgetBox(
@@ -137,7 +137,7 @@ class OWTreetagger(OWWidget):
                 widget=self.infoBox_bin,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier bin',
-                callback=self.bin,
+                callback=self.get_bin,
             )
 
             self.infoBox_lib = OWGUI.widgetBox(
@@ -148,20 +148,26 @@ class OWTreetagger(OWWidget):
                 widget=self.infoBox_lib,
                 master=self,
                 label='Veuillez entrer le lien correct vers le dossier lib',
-                callback=self.lib,
+                callback=self.get_lib,
             )
 
 
         # aller chercher le lien TreeTagger si pas deja la
-        if self.lien_ttgg is None or self.lien_bin is None or self.lien_cmd is None or self.lien_lib is None:
-            self.browse()
-
+        if self.system != "nt":
+            if self.lien_ttgg is None or self.lien_bin is None or self.lien_cmd is None or self.lien_lib is None:
+                self.browse()
+            else:
+                self.initialiser_langue()
+                self.afficher_interface(True)
         else:
-            self.initialiser_langue()
-            self.afficher_interface(True)
+            if self.lien_ttgg is None:
+                self.browse()
+            else:
+                self.initialiser_langue()
+                self.afficher_interface(True)
 
     # definitions
-    def bin(self):
+    def get_bin(self):
         self.lien_bin = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien bin')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
@@ -171,7 +177,7 @@ class OWTreetagger(OWWidget):
         self.saveSettings()
 
 
-    def lib(self):
+    def get_lib(self):
         self.lien_lib = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien lib')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
@@ -181,7 +187,7 @@ class OWTreetagger(OWWidget):
         self.saveSettings()
 
 
-    def cmd(self):
+    def get_cmd(self):
         self.lien_cmd = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien cmd')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
@@ -279,7 +285,6 @@ class OWTreetagger(OWWidget):
         self.langues = langues_presentes
 
 
-
     def afficher_interface(self, valeur):
 
         self.infoBox3.setVisible(True)
@@ -364,14 +369,19 @@ class OWTreetagger(OWWidget):
             self.send('Text data', None)
         else:
 
+            compteur = 0
+            for nb_segment in self.inputData:
+                taille_segment = self.tag(nb_segment.get_content())
+                compteur += len(taille_segment)
+            # Initialize progress bar.
+            progressBar = OWGUI.ProgressBar(
+                self,
+                iterations=compteur
+            )
+
             new_segmentations = list()
             for in_segment in self.inputData:
 
-                # Initialize progress bar.
-                progressBar = OWGUI.ProgressBar(
-                    self,
-                    iterations=len(self.inputData)
-                )
                 tagged_text = self.tag(in_segment.get_content())
 
 
@@ -387,15 +397,13 @@ class OWTreetagger(OWWidget):
                     new_annotations.update({
                         "POS":  tagged_text[new_seg_idx][1],
                         "lemma": tagged_text[new_seg_idx][2],
-                        "word": tagged_text[new_seg_idx][0],   #juste pour verifier
                     })
                     new_segmentation[new_seg_idx].annotations = new_annotations
+                    progressBar.advance()   # 1 tick on the progress bar...
+
                 new_segmentations.append(new_segmentation)
 
-                progressBar.advance()   # 1 tick on the progress bar...
-
             output_segmentation = segmenter.concatenate(new_segmentations)
-
             self.send('Text data', output_segmentation, self)
 
             # Clear progress bar.
