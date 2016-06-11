@@ -102,20 +102,20 @@ class OWTreetagger(OWWidget):
 
         OWGUI.widgetLabel(
             widget=self.infoBox3,
-            label="Rappel :\n\nSous Windows\nle chemin pour retrouver Treetagger doit contenir"
-                  "3 fichier:\n- 'bin', qui lui contient le fichier 'tree-tagger.exe'"
-                  "\n- 'cmd', qui lui contient les fichiers 'utf8-tokenize.perl' et 'tokenize.pl'"
-                  "\n- 'lib' qui contient les langue de treetagger\n\n"
-                  "Sous Mac\nentrez les trois chemin ce ces "
-                  "3 fichier:\n- 'bin', qui lui contient le fichier 'tree-tagger.exe'"
-                  "\n- 'cmd', qui lui contient les fichiers 'utf8-tokenize.perl' et 'tokenize.pl'"
-                  "\n- 'lib' qui contient les langue de treetagger",
+            label="Reminder :\n\nOn Windows\nthe path to find Treetagger must contain"
+                  "3 files:\n- 'bin', who must contain 'tree-tagger.exe'"
+                  "\n- 'cmd', who must contain 'utf8-tokenize.perl' and 'tokenize.pl'"
+                  "\n- 'lib' who contain your setup languages for Treetagger\n\n"
+                  "On Mac\nplease enter the three paths to those "
+                  "3 files:\n- 'bin', who must contain 'tree-tagger.exe'"
+                  "\n- 'cmd', who must contain 'utf8-tokenize.perl' and 'tokenize.pl'"
+                  "\n- 'lib' who contain your setup languages for Treetagger",
         )
         if self.system == "nt":
             OWGUI.button(
                 widget=self.infoBox3,
                 master=self,
-                label='Veuillez entrer le lien correct vers treetagger',
+                label='Please enter a correct path to treetagger',
                 callback=self.browse,
             )
         else:
@@ -125,7 +125,7 @@ class OWTreetagger(OWWidget):
             OWGUI.button(
                 widget=self.infoBox_cmd,
                 master=self,
-                label='Veuillez entrer le lien correct vers le dossier cmd',
+                label='Please enter a correct path to the document cmd',
                 callback=self.get_cmd,
             )
 
@@ -136,7 +136,7 @@ class OWTreetagger(OWWidget):
             OWGUI.button(
                 widget=self.infoBox_bin,
                 master=self,
-                label='Veuillez entrer le lien correct vers le dossier bin',
+                label='Please enter a correct path to the document bin',
                 callback=self.get_bin,
             )
 
@@ -147,7 +147,7 @@ class OWTreetagger(OWWidget):
             OWGUI.button(
                 widget=self.infoBox_lib,
                 master=self,
-                label='Veuillez entrer le lien correct vers le dossier lib',
+                label='Please enter a correct path to the document lib',
                 callback=self.get_lib,
             )
 
@@ -168,7 +168,7 @@ class OWTreetagger(OWWidget):
 
     # definitions
     def get_bin(self):
-        self.lien_bin = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien bin')))
+        self.lien_bin = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Enter a path to bin')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
         else:
@@ -178,7 +178,7 @@ class OWTreetagger(OWWidget):
 
 
     def get_lib(self):
-        self.lien_lib = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien lib')))
+        self.lien_lib = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Enter a path to lib')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
         else:
@@ -188,7 +188,7 @@ class OWTreetagger(OWWidget):
 
 
     def get_cmd(self):
-        self.lien_cmd = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien cmd')))
+        self.lien_cmd = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Enter a path to cmd')))
         if not self.verifier_treetagger():
             self.afficher_interface(False)
         else:
@@ -209,7 +209,7 @@ class OWTreetagger(OWWidget):
          #   pass
 
     def browse(self):
-        self.lien_ttgg = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Entrer lien Treetagger')))
+        self.lien_ttgg = os.path.normpath(unicode(QFileDialog.getExistingDirectory(self, u'Enter a path to Treetagger')))
 
         self.chemin_acces()
 
@@ -218,7 +218,7 @@ class OWTreetagger(OWWidget):
             QMessageBox.warning(
                     None,
                     'Textable',
-                    "Votre lien est incorrect, veuillez en selectionnez un nouveau !",
+                    "The path you gave is incorrect, please select a new one!",
                     QMessageBox.Ok
             )
 
@@ -410,19 +410,6 @@ class OWTreetagger(OWWidget):
             progressBar.finish()
 
     def tag(self, inputData):
-        """
-        a_eliminer = ["\n","\t","\r"]
-        for ele in a_eliminer:
-            inputData = inputData.replace(ele, "")
-        replacable = ["?", ",", ".", "!", ":", ";", "'", " "]
-        for el in replacable:
-            inputData = inputData.replace(el, "\n"+el+"\n")
-        inputData = inputData.replace(" \n", "")
-        inputData = inputData.replace("\n\n", "\n")
-        """
-
-
-
 
         tmp = os.path.normpath(os.path.expanduser("~/tmp_file.txt"))
         tmp2 = os.path.normpath(os.path.expanduser("~/tmp_file2.txt"))
@@ -430,16 +417,7 @@ class OWTreetagger(OWWidget):
         f = open(tmp, 'w')
         f.write(inputData.encode("UTF-8"))
         f.close()
-
-        """
-        Options:
-        -e : English text
-        -f : French text
-        -i : Italian text
-        -a <file>: <file> contains a list of words which are either abbreviations or
-           words which should not be further split.
-";
-        """
+        
         option = ""
         if self.langues[self.langue] == "french":
             option = "-f"
@@ -519,13 +497,10 @@ class OWTreetagger(OWWidget):
                 Segmentation.data.pop(i)
             else:
                 break
-    #fonctionne ?
-
+ 
     def onDeleteWidget(self):
         """Free memory when widget is deleted (overriden method)"""
         self.clearCreatedInputs()
-
-
 
     def getSettings(self, *args, **kwargs):
         """Read settings, taking into account version number (overriden)"""
