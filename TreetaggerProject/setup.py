@@ -9,7 +9,7 @@ setup(
         'Orange>=2.1,<3',
         'Orange-Textable>=1.5.2',
     ],
-    author='University of Lausanne',
+    author='X. Barros, C. Beutler, J. Pitteloud, G. Schneider, F. Testuz, M. Wuetrich',
     license='GNU General Public License v3 (GPLv3)',
     keywords=[
         'tree-tagger',
