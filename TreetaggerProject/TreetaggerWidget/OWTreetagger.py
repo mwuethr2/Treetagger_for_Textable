@@ -103,11 +103,11 @@ class OWTreetagger(OWWidget):
         OWGUI.widgetLabel(
             widget=self.infoBox3,
             label="Reminder :\n\nOn Windows\nthe path to find Treetagger must contain"
-                  "3 files:\n- 'bin', who must contain 'tree-tagger.exe'"
+                  "3 directories:\n- 'bin', who must contain 'tree-tagger.exe'"
                   "\n- 'cmd', who must contain 'utf8-tokenize.perl' and 'tokenize.pl'"
                   "\n- 'lib' who contain your setup languages for Treetagger\n\n"
                   "On Mac\nplease enter the three paths to those "
-                  "3 files:\n- 'bin', who must contain 'tree-tagger.exe'"
+                  "3 directories:\n- 'bin', who must contain 'tree-tagger.exe'"
                   "\n- 'cmd', who must contain 'utf8-tokenize.perl' and 'tokenize.pl'"
                   "\n- 'lib' who contain your setup languages for Treetagger",
         )
