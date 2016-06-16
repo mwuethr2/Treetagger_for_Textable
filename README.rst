@@ -4,9 +4,18 @@ Treetagger Widget
 
 Signal
 ============
-Inputs: Texte brut via text field
 
-Output: dans le  widget display s'affiche le style de mots avec la segmentation
+Input:
+
+* ``Text Input``
+
+  Segmentation contenant les segments à étiqueter
+
+Output: 
+
+* ``Text data``
+
+  Segmentation en mots étiquetée par TreeTagger
 
 
 Description
